@@ -165,10 +165,7 @@ export default function AdminDashboardPage() {
                       alt="Баримт"
                       fill
                       className="object-cover transition group-hover:brightness-95"
-                      unoptimized={
-                        s.receiptImage.startsWith("http") ||
-                        process.env.NODE_ENV === "development"
-                      }
+                      unoptimized
                     />
                     <span className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent py-1 text-center text-[10px] font-bold text-white">
                       Томруулах
@@ -308,10 +305,7 @@ export default function AdminDashboardPage() {
                   fill
                   className="object-contain p-2"
                   sizes="(max-width: 896px) 100vw, 896px"
-                  unoptimized={
-                    preview.receiptImage.startsWith("http") ||
-                    process.env.NODE_ENV === "development"
-                  }
+                  unoptimized
                 />
               </div>
 

@@ -193,10 +193,7 @@ export function SubmitReceiptForm({ user, onLogout }: Props) {
                           alt=""
                           fill
                           className="object-cover"
-                          unoptimized={
-                            s.receiptImage.startsWith("http") ||
-                            process.env.NODE_ENV === "development"
-                          }
+                          unoptimized
                         />
                       </div>
                       <div className="min-w-0 flex-1 text-sm">
