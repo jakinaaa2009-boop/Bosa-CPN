@@ -17,10 +17,45 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 const uploadsPath = path.join(__dirname, "..", "uploads");
 
-const corsOrigin = process.env.CORS_ORIGIN || "http://localhost:3000";
+/** Browsers send Origin without a trailing slash; env values must match exactly. */
+function normalizeCorsOrigin(url) {
+  if (!url || typeof url !== "string") return "";
+  return url.trim().replace(/\/+$/, "");
+}
+
+const corsRaw = process.env.CORS_ORIGIN || "http://localhost:3000";
+const corsAllowed = corsRaw
+  .split(",")
+  .map((s) => normalizeCorsOrigin(s))
+  .filter(Boolean);
+const corsAllowVercel =
+  process.env.CORS_ALLOW_VERCEL === "1" ||
+  process.env.CORS_ALLOW_VERCEL === "true";
+
+function corsOriginValidator(origin, callback) {
+  if (!origin) {
+    callback(null, true);
+    return;
+  }
+  const o = normalizeCorsOrigin(origin);
+  if (corsAllowed.includes(o)) {
+    callback(null, true);
+    return;
+  }
+  if (
+    corsAllowVercel &&
+    /^https:\/\/[a-z0-9-]+\.vercel\.app$/i.test(o)
+  ) {
+    callback(null, true);
+    return;
+  }
+  console.warn("[cors] blocked origin:", origin, "allowed:", corsAllowed);
+  callback(null, false);
+}
+
 app.use(
   cors({
-    origin: corsOrigin.split(",").map((s) => s.trim()),
+    origin: corsOriginValidator,
     credentials: true,
   })
 );
@@ -50,8 +85,8 @@ async function ensureDefaultAdmin() {
 async function main() {
   await connectDb();
   await ensureDefaultAdmin();
-  app.listen(PORT, () => {
-    console.log(`API listening on http://localhost:${PORT}`);
+  app.listen(PORT, "0.0.0.0", () => {
+    console.log(`API listening on 0.0.0.0:${PORT}`);
   });
 }
 
