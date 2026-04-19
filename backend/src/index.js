@@ -80,6 +80,7 @@ app.use(
   })
 );
 app.use(express.json());
+/** Legacy local files; new uploads use R2 URLs when configured (see receiptStorage.js). */
 app.use("/uploads", express.static(uploadsPath));
 
 app.use("/api/user", userRouter);

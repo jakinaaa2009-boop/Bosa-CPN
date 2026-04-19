@@ -2,6 +2,7 @@ import { Router } from "express";
 import { Submission } from "../models/Submission.js";
 import { User } from "../models/User.js";
 import { uploadReceipt } from "../multerConfig.js";
+import { storeReceiptImage, removeStoredReceiptImage } from "../receiptStorage.js";
 import { requireAdmin } from "../middleware/auth.js";
 import { requireUser } from "../middleware/userAuth.js";
 import {
@@ -61,7 +62,11 @@ router.post("/", requireUser, uploadReceipt.single("receipt"), async (req, res) 
       });
     }
 
-    const relPath = `/uploads/${req.file.filename}`;
+    const receiptImage = await storeReceiptImage(
+      req.file.buffer,
+      req.file.mimetype,
+      req.file.originalname
+    );
     const doc = await Submission.create({
       userId: account._id,
       receiptNumber,
@@ -72,7 +77,7 @@ router.post("/", requireUser, uploadReceipt.single("receipt"), async (req, res) 
       productName: "",
       phone: account.phone,
       email: (account.email || "").trim(),
-      receiptImage: relPath,
+      receiptImage,
       status: "pending",
     });
     res.status(201).json({
@@ -182,8 +187,10 @@ router.patch("/:id/status", requireAdmin, async (req, res) => {
 
 router.delete("/:id", requireAdmin, async (req, res) => {
   try {
-    const doc = await Submission.findByIdAndDelete(req.params.id);
+    const doc = await Submission.findById(req.params.id).lean();
     if (!doc) return res.status(404).json({ error: "Not found" });
+    await removeStoredReceiptImage(doc.receiptImage);
+    await Submission.findByIdAndDelete(req.params.id);
     res.json({ ok: true });
   } catch (e) {
     console.error(e);

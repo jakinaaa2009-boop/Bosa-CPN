@@ -7,6 +7,7 @@ import { User } from "../models/User.js";
 import { Submission } from "../models/Submission.js";
 import { requireAdmin } from "../middleware/auth.js";
 import { getJwtSecret } from "../jwtSecret.js";
+import { removeStoredReceiptImage } from "../receiptStorage.js";
 
 const router = Router();
 
@@ -131,6 +132,12 @@ router.delete("/users/:id", requireAdmin, async (req, res) => {
     const user = await User.findById(id);
     if (!user) {
       return res.status(404).json({ error: "Хэрэглэгч олдсонгүй" });
+    }
+    const subs = await Submission.find({ userId: user._id })
+      .select("receiptImage")
+      .lean();
+    for (const s of subs) {
+      await removeStoredReceiptImage(s.receiptImage);
     }
     await Submission.deleteMany({ userId: user._id });
     await User.findByIdAndDelete(id);

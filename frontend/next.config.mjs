@@ -44,6 +44,15 @@ try {
   /* ignore invalid NEXT_PUBLIC_API_URL at build */
 }
 
+/** Receipt images served from Cloudflare R2 public URL */
+if (process.env.NEXT_PUBLIC_R2_IMAGE_HOSTNAME) {
+  remotePatterns.push({
+    protocol: "https",
+    hostname: process.env.NEXT_PUBLIC_R2_IMAGE_HOSTNAME,
+    pathname: "/**",
+  });
+}
+
 /** Must match `useBrowserBackendProxy()` in lib/api.ts */
 function useBackendProxyRewrite() {
   if (process.env.NEXT_PUBLIC_USE_API_PROXY === "false") return false;

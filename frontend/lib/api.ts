@@ -38,8 +38,11 @@ export function apiUrl(path: string) {
   return `${base()}${p}`;
 }
 
+/** Resolves stored receipt reference for <img src>. R2 and other absolute URLs are returned as-is. */
 export function mediaUrl(storedPath: string) {
-  if (storedPath.startsWith("http")) return storedPath;
+  if (storedPath.startsWith("http://") || storedPath.startsWith("https://")) {
+    return storedPath;
+  }
   return apiUrl(storedPath.startsWith("/") ? storedPath : `/${storedPath}`);
 }
 

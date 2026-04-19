@@ -73,6 +73,12 @@ export default function AdminUsersPage() {
           </div>
           <div className="flex flex-wrap gap-2">
             <Link
+              href="/admin/stats"
+              className="rounded-xl border-2 border-sky-300 bg-sky-50 px-4 py-2 text-sm font-extrabold text-sky-900"
+            >
+              График
+            </Link>
+            <Link
               href="/admin/dashboard"
               className="rounded-xl border-2 border-slate-300 px-4 py-2 text-sm font-bold text-slate-800"
             >

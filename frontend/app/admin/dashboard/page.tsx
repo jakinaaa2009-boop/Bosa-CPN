@@ -17,7 +17,6 @@ import {
   type AdminStats,
 } from "@/lib/api";
 import { AdminBrandLogo } from "@/components/admin/AdminBrandLogo";
-import { AdminStatsCharts } from "@/components/admin/AdminStatsCharts";
 
 function entryCount(s: Submission): number {
   return Math.max(1, s.lotteryEntries ?? s.productCount ?? 1);
@@ -135,10 +134,16 @@ export default function AdminDashboardPage() {
           <div className="flex min-w-0 max-w-full flex-1 items-center gap-3 md:gap-4">
             <AdminBrandLogo />
             <h1 className="min-w-0 font-display text-xl font-black text-slate-900 md:text-2xl">
-              Админ — Статистик ба баримтууд
+              Админ — Баримтууд
             </h1>
           </div>
           <div className="flex flex-wrap gap-2">
+            <Link
+              href="/admin/stats"
+              className="rounded-xl border-2 border-sky-300 bg-sky-50 px-4 py-2 text-sm font-extrabold text-sky-900"
+            >
+              График
+            </Link>
             <Link
               href="/admin/users"
               className="rounded-xl border-2 border-violet-300 bg-violet-50 px-4 py-2 text-sm font-extrabold text-violet-900"
@@ -200,9 +205,6 @@ export default function AdminDashboardPage() {
                     {stats.totalCompanies.toLocaleString("mn-MN")}
                   </p>
                 </div>
-              </div>
-              <div className="mt-8">
-                <AdminStatsCharts stats={stats} />
               </div>
             </>
           )}

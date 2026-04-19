@@ -20,6 +20,7 @@ const submissionSchema = new mongoose.Schema(
     productName: { type: String, trim: true, default: "" },
     phone: { type: String, required: true, trim: true },
     email: { type: String, trim: true, default: "" },
+    /** Full HTTPS URL (R2) or legacy `/uploads/...` path */
     receiptImage: { type: String, required: true },
     status: {
       type: String,

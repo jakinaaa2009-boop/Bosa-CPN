@@ -112,6 +112,12 @@ export default function AdminDrawPage() {
           </div>
           <div className="flex flex-wrap gap-2">
             <Link
+              href="/admin/stats"
+              className="rounded-xl border-2 border-sky-300 bg-sky-50 px-4 py-2 text-sm font-extrabold text-sky-900"
+            >
+              График
+            </Link>
+            <Link
               href="/admin/users"
               className="rounded-xl border-2 border-violet-300 bg-violet-50 px-4 py-2 text-sm font-bold text-violet-900"
             >

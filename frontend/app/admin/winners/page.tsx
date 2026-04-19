@@ -67,6 +67,12 @@ export default function AdminWinnersPage() {
           </div>
           <div className="flex flex-wrap gap-2">
             <Link
+              href="/admin/stats"
+              className="rounded-xl border-2 border-sky-500/50 bg-sky-950/80 px-4 py-2 text-sm font-extrabold text-sky-200"
+            >
+              График
+            </Link>
+            <Link
               href="/admin/dashboard"
               className="rounded-xl border-2 border-slate-600 bg-slate-800 px-4 py-2 text-sm font-bold text-slate-100"
             >
