@@ -8,6 +8,7 @@ import {
   fetchMySubmissions,
   mediaUrl,
   submitReceipt,
+  submissionDisplayLabel,
   type Submission,
   type UserProfile,
 } from "@/lib/api";
@@ -223,7 +224,7 @@ export function SubmitReceiptForm({ user, onLogout }: Props) {
                       </div>
                       <div className="min-w-0 flex-1 text-sm">
                         <p className="font-black text-slate-900">
-                          {s.receiptNumber || "—"}
+                          {submissionDisplayLabel(s)}
                         </p>
                         <p className="font-bold text-fuchsia-700">
                           {s.totalAmount != null

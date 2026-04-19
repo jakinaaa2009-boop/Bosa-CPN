@@ -90,13 +90,17 @@ router.post("/", requireUser, uploadReceipt.single("receipt"), async (req, res) 
       req.file.mimetype,
       req.file.originalname
     );
+    const displayName = isCompany
+      ? String(account.companyName || "").trim() || account.phone
+      : "";
+
     const doc = await Submission.create({
       userId: account._id,
       receiptNumber,
       totalAmount,
       productCount,
       lotteryEntries: productCount,
-      fullName: "",
+      fullName: displayName,
       productName: "",
       phone: account.phone,
       email: (account.email || "").trim(),

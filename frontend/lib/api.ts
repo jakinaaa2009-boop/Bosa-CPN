@@ -192,6 +192,7 @@ export type Submission = {
   _id: string;
   receiptNumber?: string;
   totalAmount?: number | null;
+  /** Компанийн нэр эсвэл харуулах нэр (компани баримтанд) */
   fullName?: string;
   phone: string;
   email?: string;
@@ -203,6 +204,17 @@ export type Submission = {
   createdAt: string;
   userId?: string | null;
 };
+
+/** Картад / дугуйд харуулах: эхлээд fullName (компани), дараа нь баримтын дугаар. */
+export function submissionDisplayLabel(s: {
+  fullName?: string;
+  receiptNumber?: string;
+  phone: string;
+}): string {
+  const n = s.fullName?.trim();
+  if (n) return n;
+  return s.receiptNumber?.trim() || s.phone || "—";
+}
 
 export type Winner = {
   _id: string;

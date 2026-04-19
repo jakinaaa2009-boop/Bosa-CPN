@@ -67,7 +67,10 @@ router.get("/pool", requireAdmin, async (req, res) => {
     res.json(
       pool.map((s) => ({
         _id: s._id,
-        fullName: s.receiptNumber || s.fullName || s.phone,
+        fullName:
+          (s.fullName && String(s.fullName).trim()) ||
+          s.receiptNumber ||
+          s.phone,
         phone: s.phone,
         productName:
           s.totalAmount != null
@@ -117,7 +120,10 @@ router.post("/spin", requireAdmin, async (req, res) => {
     }
 
     const winner = await Winner.create({
-      winnerName: pick.receiptNumber || pick.fullName || pick.phone,
+      winnerName:
+        (pick.fullName && String(pick.fullName).trim()) ||
+        pick.receiptNumber ||
+        pick.phone,
       phone: pick.phone,
       productName:
         pick.totalAmount != null

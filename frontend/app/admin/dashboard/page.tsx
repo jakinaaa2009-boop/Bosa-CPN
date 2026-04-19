@@ -13,6 +13,7 @@ import {
   deleteSubmission,
   getAdminToken,
   mediaUrl,
+  submissionDisplayLabel,
   type Submission,
   type AdminStats,
 } from "@/lib/api";
@@ -404,7 +405,7 @@ export default function AdminDashboardPage() {
                     Баримтын зураг
                   </h2>
                   <p className="text-sm font-semibold text-slate-600">
-                    {preview.receiptNumber || "—"} ·{" "}
+                    {submissionDisplayLabel(preview)} ·{" "}
                     {preview.totalAmount != null
                       ? `${preview.totalAmount.toLocaleString("mn-MN")}₮`
                       : "—"}{" "}

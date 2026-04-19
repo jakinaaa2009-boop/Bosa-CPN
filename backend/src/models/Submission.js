@@ -15,7 +15,7 @@ const submissionSchema = new mongoose.Schema(
     productCount: { type: Number, min: 1, default: 1 },
     /** Сугалааны эрх (админ засах боломжтой; эсвэл productCount-тай тэнцүү) */
     lotteryEntries: { type: Number, min: 1, default: 1 },
-    /** Legacy */
+    /** Хувь хүн: хоосон эсвэл ирээдүйн талбар. Компани: компанийн нэр (дугуй/жагсаалтанд харагдана). */
     fullName: { type: String, trim: true, default: "" },
     productName: { type: String, trim: true, default: "" },
     phone: { type: String, required: true, trim: true },
