@@ -45,6 +45,7 @@ function productCountForDisplay(s: Submission): number {
 }
 
 export function SubmitReceiptForm({ user, onLogout }: Props) {
+  const isCompany = user.accountType === "company";
   const [receiptNumber, setReceiptNumber] = useState("");
   const [totalAmount, setTotalAmount] = useState("");
   const [productCount, setProductCount] = useState("1");
@@ -86,7 +87,7 @@ export function SubmitReceiptForm({ user, onLogout }: Props) {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!isValidReceiptFormat(receiptNumber)) {
+    if (!isCompany && !isValidReceiptFormat(receiptNumber)) {
       setStatus("error");
       setMessage(`Баримтын дугаар ${RECEIPT_PLACEHOLDER} хэлбэртэй байна (2 үсэг + 8 тоо).`);
       return;
@@ -111,7 +112,9 @@ export function SubmitReceiptForm({ user, onLogout }: Props) {
     setStatus("loading");
     setMessage("");
     const fd = new FormData();
-    fd.append("receiptNumber", receiptNumber.toUpperCase());
+    if (!isCompany) {
+      fd.append("receiptNumber", receiptNumber.toUpperCase());
+    }
     fd.append("totalAmount", String(amt));
     fd.append("productCount", String(pc));
     fd.append("receipt", file);
@@ -260,21 +263,23 @@ export function SubmitReceiptForm({ user, onLogout }: Props) {
         onSubmit={handleSubmit}
         className="kid-card space-y-5 bg-gradient-to-br from-cyan-50 via-white to-pink-50 p-8 md:p-10"
       >
-        <label className="block">
-          <span className="text-sm font-bold text-slate-700">Баримтын дугаар</span>
-          <input
-            required
-            value={receiptNumber}
-            onChange={(e) => setReceiptNumber(formatReceiptInput(e.target.value))}
-            className="kid-input mt-2 font-mono font-bold uppercase tracking-wider"
-            placeholder={RECEIPT_PLACEHOLDER}
-            maxLength={10}
-            autoComplete="off"
-          />
-          <p className="mt-1.5 text-xs font-semibold text-slate-500">
-            2 латин үсэг + 8 тоо, жишээ нь {RECEIPT_PLACEHOLDER}
-          </p>
-        </label>
+        {!isCompany && (
+          <label className="block">
+            <span className="text-sm font-bold text-slate-700">Баримтын дугаар</span>
+            <input
+              required
+              value={receiptNumber}
+              onChange={(e) => setReceiptNumber(formatReceiptInput(e.target.value))}
+              className="kid-input mt-2 font-mono font-bold uppercase tracking-wider"
+              placeholder={RECEIPT_PLACEHOLDER}
+              maxLength={10}
+              autoComplete="off"
+            />
+            <p className="mt-1.5 text-xs font-semibold text-slate-500">
+              2 латин үсэг + 8 тоо, жишээ нь {RECEIPT_PLACEHOLDER}
+            </p>
+          </label>
+        )}
         <label className="block">
           <span className="text-sm font-bold text-slate-700">Үнийн дүн (₮)</span>
           <input

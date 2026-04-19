@@ -12,6 +12,17 @@ import {
 
 const router = Router();
 
+/** 2 letters + 8 digits; prefix CP reserved for auto-generated company submissions. */
+async function allocateCompanyReceiptNumber() {
+  for (let attempt = 0; attempt < 40; attempt++) {
+    const digits = String(Math.floor(Math.random() * 1e8)).padStart(8, "0");
+    const rn = `CP${digits}`;
+    const exists = await Submission.findOne({ receiptNumber: rn }).lean();
+    if (!exists) return rn;
+  }
+  throw new Error("Could not allocate company receipt number");
+}
+
 router.get("/mine", requireUser, async (req, res) => {
   try {
     const list = await Submission.find({ userId: req.user.userId })
@@ -33,15 +44,34 @@ router.post("/", requireUser, uploadReceipt.single("receipt"), async (req, res) 
     if (!account) {
       return res.status(401).json({ error: "Хэрэглэгч олдсонгүй" });
     }
-    const receiptNumber = normalizeReceiptNumber(req.body.receiptNumber);
-    if (!receiptNumber) {
-      return res.status(400).json({ error: "Баримтын дугаар оруулна уу" });
+    const isCompany = account.accountType === "company";
+
+    let receiptNumber;
+    if (isCompany) {
+      try {
+        receiptNumber = await allocateCompanyReceiptNumber();
+      } catch (e) {
+        console.error(e);
+        return res.status(500).json({ error: "Баримтын дугаар үүсгэж чадсангүй" });
+      }
+    } else {
+      receiptNumber = normalizeReceiptNumber(req.body.receiptNumber);
+      if (!receiptNumber) {
+        return res.status(400).json({ error: "Баримтын дугаар оруулна уу" });
+      }
+      if (!isValidReceiptNumber(receiptNumber)) {
+        return res.status(400).json({
+          error: "Баримтын дугаарын хэлбэр буруу (жишээ: AA00000000)",
+        });
+      }
+      const dup = await Submission.findOne({ receiptNumber });
+      if (dup) {
+        return res.status(409).json({
+          error: "Энэ баримтын дугаар аль хэдийн бүртгэгдсэн",
+        });
+      }
     }
-    if (!isValidReceiptNumber(receiptNumber)) {
-      return res.status(400).json({
-        error: "Баримтын дугаарын хэлбэр буруу (жишээ: AA00000000)",
-      });
-    }
+
     const amountRaw = req.body.totalAmount ?? req.body.amount;
     const totalAmount = parseFloat(String(amountRaw ?? "").replace(/,/g, ""));
     if (Number.isNaN(totalAmount) || totalAmount <= 0) {
@@ -54,13 +84,6 @@ router.post("/", requireUser, uploadReceipt.single("receipt"), async (req, res) 
       1,
       Math.floor(parseInt(String(productCountRaw), 10)) || 1
     );
-
-    const dup = await Submission.findOne({ receiptNumber });
-    if (dup) {
-      return res.status(409).json({
-        error: "Энэ баримтын дугаар аль хэдийн бүртгэгдсэн",
-      });
-    }
 
     const receiptImage = await storeReceiptImage(
       req.file.buffer,
