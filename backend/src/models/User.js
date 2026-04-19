@@ -6,6 +6,12 @@ const userSchema = new mongoose.Schema(
     passwordHash: { type: String, required: true },
     email: { type: String, trim: true, default: "" },
     age: { type: Number, min: 0, max: 150, default: null },
+    accountType: {
+      type: String,
+      enum: ["individual", "company"],
+      default: "individual",
+    },
+    companyName: { type: String, trim: true, default: "" },
   },
   { timestamps: true }
 );

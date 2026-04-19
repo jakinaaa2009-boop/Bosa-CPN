@@ -25,18 +25,28 @@ function publicUser(u) {
     phone: u.phone,
     email: u.email || "",
     age: u.age ?? null,
+    accountType: u.accountType === "company" ? "company" : "individual",
+    companyName: (u.companyName || "").trim(),
   };
 }
 
 router.post("/register", async (req, res) => {
   try {
-    const { phone, password, email, age } = req.body;
+    const { phone, password, email, age, accountType, companyName } = req.body;
     const p = normalizePhone(phone);
     if (!p) {
       return res.status(400).json({ error: "Утасны дугаар шаардлагатай" });
     }
     if (!password || String(password).length < 6) {
       return res.status(400).json({ error: "Нууц үг хамгийн багадаа 6 тэмдэгт" });
+    }
+    const isCompany =
+      accountType === "company" || accountType === "Компани";
+    const companyNameTrim = String(companyName || "").trim();
+    if (isCompany && companyNameTrim.length < 2) {
+      return res.status(400).json({
+        error: "Компанийн нэрийг оруулна уу (хамгийн багадаа 2 тэмдэгт)",
+      });
     }
     const exists = await User.findOne({ phone: p });
     if (exists) {
@@ -55,6 +65,8 @@ router.post("/register", async (req, res) => {
       passwordHash,
       email: String(email || "").trim(),
       age: ageNum,
+      accountType: isCompany ? "company" : "individual",
+      companyName: isCompany ? companyNameTrim : "",
     });
     const token = signUserToken(user);
     res.status(201).json({ token, user: publicUser(user) });

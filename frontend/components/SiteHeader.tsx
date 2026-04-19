@@ -24,10 +24,10 @@ export function SiteHeader() {
           {/* Logos — shared height, proportional widths */}
           <Link
             href="/"
-            className="group flex shrink-0 items-center gap-2 rounded-2xl bg-white/70 px-2.5 py-1.5 shadow-md ring-2 ring-white/90 transition hover:bg-white hover:shadow-lg sm:gap-3 sm:px-3 sm:py-2"
+            className="group flex shrink-0 items-center gap-1 overflow-visible rounded-2xl bg-white/70 px-2 py-1.5 shadow-md ring-2 ring-white/90 transition hover:bg-white hover:shadow-lg sm:gap-1.5 sm:px-2.5 sm:py-2 md:px-3"
           >
             <motion.span
-              className="relative h-9 w-[min(38vw,150px)] sm:h-11 sm:w-[min(34vw,170px)]"
+              className="relative h-9 w-[min(40vw,132px)] shrink-0 sm:h-10 sm:w-[min(34vw,152px)]"
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.98 }}
             >
@@ -36,16 +36,16 @@ export function SiteHeader() {
                 alt="Лого"
                 fill
                 className="object-contain object-left"
-                sizes="170px"
+                sizes="152px"
                 priority
               />
             </motion.span>
             <span
-              className="hidden h-8 w-px shrink-0 bg-gradient-to-b from-fuchsia-300 to-amber-300 sm:block"
+              className="hidden h-7 w-px shrink-0 bg-gradient-to-b from-fuchsia-300 to-amber-300 sm:block"
               aria-hidden
             />
             <motion.span
-              className="relative h-8 w-[min(22vw,88px)] sm:h-10 sm:w-[min(20vw,96px)]"
+              className="relative h-9 w-[min(34vw,118px)] shrink-0 overflow-visible sm:h-10 sm:w-[min(28vw,134px)]"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.98 }}
             >
@@ -53,8 +53,8 @@ export function SiteHeader() {
                 src="/logo2.png"
                 alt="Кампанийн лого"
                 fill
-                className="object-contain object-left"
-                sizes="96px"
+                className="origin-left object-contain object-left scale-[1.12] sm:scale-[1.18]"
+                sizes="134px"
                 priority
               />
             </motion.span>

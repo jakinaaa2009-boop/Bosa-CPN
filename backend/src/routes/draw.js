@@ -5,12 +5,35 @@ import { requireAdmin } from "../middleware/auth.js";
 
 const router = Router();
 
-/** Approved submissions whose phone is not already a winner (optional dedupe). */
+function entryWeight(s) {
+  const w = Math.max(
+    1,
+    Math.floor(Number(s.lotteryEntries)) ||
+      Math.floor(Number(s.productCount)) ||
+      1
+  );
+  return w;
+}
+
+/** Approved submissions whose phone is not already a winner. */
 async function eligibleApprovedSubmissions() {
   const winners = await Winner.find({}, "phone");
   const phones = new Set(winners.map((w) => w.phone));
   const approved = await Submission.find({ status: "approved" }).lean();
   return approved.filter((s) => !phones.has(s.phone));
+}
+
+/** Weighted random pick: each submission’s chance ∝ lotteryEntries. */
+function weightedPick(submissions) {
+  if (submissions.length === 0) return null;
+  const weights = submissions.map((s) => entryWeight(s));
+  const total = weights.reduce((a, b) => a + b, 0);
+  let r = Math.random() * total;
+  for (let i = 0; i < submissions.length; i++) {
+    r -= weights[i];
+    if (r <= 0) return submissions[i];
+  }
+  return submissions[submissions.length - 1];
 }
 
 router.get("/pool", requireAdmin, async (_req, res) => {
@@ -25,6 +48,8 @@ router.get("/pool", requireAdmin, async (_req, res) => {
           s.totalAmount != null
             ? `${s.totalAmount}₮`
             : s.productName || "",
+        productCount: s.productCount ?? 1,
+        lotteryEntries: entryWeight(s),
       }))
     );
   } catch (e) {
@@ -35,8 +60,7 @@ router.get("/pool", requireAdmin, async (_req, res) => {
 
 /**
  * Body: { prizeName: string, submissionIds?: string[] }
- * If submissionIds provided, winner is picked randomly from that subset (must be approved).
- * Otherwise picks from all eligible approved (not yet winning by phone).
+ * Weighted by lotteryEntries when picking randomly.
  */
 router.post("/spin", requireAdmin, async (req, res) => {
   try {
@@ -58,7 +82,11 @@ router.post("/spin", requireAdmin, async (req, res) => {
       });
     }
 
-    const pick = pool[Math.floor(Math.random() * pool.length)];
+    const pick = weightedPick(pool);
+    if (!pick) {
+      return res.status(400).json({ error: "Could not pick winner" });
+    }
+
     const winner = await Winner.create({
       winnerName: pick.receiptNumber || pick.fullName || pick.phone,
       phone: pick.phone,

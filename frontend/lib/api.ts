@@ -1,8 +1,37 @@
-const base = () =>
-  (process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000").replace(
-    /\/$/,
-    ""
+function normalizeApiBase(url: string): string {
+  return url.trim().replace(/\/+$/, "");
+}
+
+/**
+ * Same-origin `/backend-proxy` → Next.js rewrites to Railway (no browser CORS).
+ * - Explicit: `NEXT_PUBLIC_USE_API_PROXY=true` | `false`
+ * - Auto in dev: HTTPS remote API (e.g. Railway) + `next dev` → proxy on without extra env
+ */
+function useBrowserBackendProxy(): boolean {
+  if (typeof window === "undefined") return false;
+  if (process.env.NEXT_PUBLIC_USE_API_PROXY === "false") return false;
+  if (process.env.NEXT_PUBLIC_USE_API_PROXY === "true") return true;
+  const raw = normalizeApiBase(process.env.NEXT_PUBLIC_API_URL || "");
+  if (!raw || process.env.NODE_ENV !== "development") return false;
+  try {
+    const u = new URL(raw);
+    if (u.protocol !== "https:") return false;
+    if (u.hostname === "localhost" || u.hostname === "127.0.0.1") return false;
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function base(): string {
+  const configured = normalizeApiBase(
+    process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"
   );
+  if (useBrowserBackendProxy()) {
+    return `${window.location.origin}/backend-proxy`;
+  }
+  return configured;
+}
 
 export function apiUrl(path: string) {
   const p = path.startsWith("/") ? path : `/${path}`;
@@ -56,10 +85,14 @@ export function userBearerHeaders(): HeadersInit {
   return h;
 }
 
+export type AccountType = "individual" | "company";
+
 export type UserProfile = {
   phone: string;
   email: string;
   age: number | null;
+  accountType: AccountType;
+  companyName: string;
 };
 
 /** Same rules as backend `phoneUtil.normalizePhone` */
@@ -86,6 +119,8 @@ export async function registerUser(payload: {
   password: string;
   email?: string;
   age?: string | number;
+  accountType?: AccountType;
+  companyName?: string;
 }): Promise<{ token: string; user: UserProfile }> {
   const res = await fetch(apiUrl("/api/user/register"), {
     method: "POST",
@@ -140,7 +175,14 @@ export async function fetchUserMe(): Promise<UserProfile> {
   if (!res.ok) {
     throw new Error((data as { error?: string }).error || "Алдаа");
   }
-  return data as UserProfile;
+  const u = data as Partial<UserProfile> & { phone: string };
+  return {
+    phone: u.phone,
+    email: u.email ?? "",
+    age: u.age ?? null,
+    accountType: u.accountType === "company" ? "company" : "individual",
+    companyName: (u.companyName ?? "").trim(),
+  };
 }
 
 export type Submission = {
@@ -151,6 +193,8 @@ export type Submission = {
   phone: string;
   email?: string;
   productName?: string;
+  productCount?: number;
+  lotteryEntries?: number;
   receiptImage: string;
   status: "pending" | "approved" | "rejected";
   createdAt: string;
@@ -172,6 +216,8 @@ export type DrawPoolItem = {
   fullName: string;
   phone: string;
   productName: string;
+  productCount?: number;
+  lotteryEntries?: number;
 };
 
 export async function fetchSubmissions(
@@ -215,6 +261,23 @@ export async function updateSubmissionStatus(
   return res.json();
 }
 
+export async function patchSubmission(
+  id: string,
+  body: Partial<{
+    status: Submission["status"];
+    lotteryEntries: number;
+    productCount: number;
+  }>
+) {
+  const res = await fetch(apiUrl(`/api/submissions/${id}`), {
+    method: "PATCH",
+    headers: adminAuthHeaders(),
+    body: JSON.stringify(body),
+  });
+  if (!res.ok) throw new Error(await res.text());
+  return res.json() as Promise<Submission>;
+}
+
 export async function deleteSubmission(id: string) {
   const res = await fetch(apiUrl(`/api/submissions/${id}`), {
     method: "DELETE",
@@ -228,12 +291,36 @@ export type PublicUser = {
   phone: string;
   email: string;
   age: number | null;
+  accountType?: AccountType;
+  companyName?: string;
   createdAt: string;
   updatedAt?: string;
 };
 
-export async function fetchAdminUsers(): Promise<PublicUser[]> {
-  const res = await fetch(apiUrl("/api/admin/users"), {
+export type AdminStats = {
+  totalUsers: number;
+  totalCompanies: number;
+  totalIndividuals: number;
+  registrationsByDay: { date: string; count: number }[];
+  ageDistribution: { label: string; count: number }[];
+};
+
+export async function fetchAdminStats(): Promise<AdminStats> {
+  const res = await fetch(apiUrl("/api/admin/stats"), {
+    headers: adminAuthHeaders(),
+  });
+  if (!res.ok) throw new Error(await res.text());
+  return res.json();
+}
+
+export async function fetchAdminUsers(
+  accountType?: "individual" | "company"
+): Promise<PublicUser[]> {
+  const q =
+    accountType && ["individual", "company"].includes(accountType)
+      ? `?accountType=${encodeURIComponent(accountType)}`
+      : "";
+  const res = await fetch(apiUrl(`/api/admin/users${q}`), {
     headers: adminAuthHeaders(),
   });
   if (!res.ok) throw new Error(await res.text());

@@ -38,9 +38,80 @@ router.get("/me", requireAdmin, (req, res) => {
   res.json({ username: req.admin.username });
 });
 
-router.get("/users", requireAdmin, async (_req, res) => {
+router.get("/stats", requireAdmin, async (_req, res) => {
   try {
-    const users = await User.find({})
+    const totalUsers = await User.countDocuments({});
+    const totalCompanies = await User.countDocuments({ accountType: "company" });
+    const totalIndividuals = await User.countDocuments({
+      accountType: { $ne: "company" },
+    });
+
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+    const registrationsByDay = await User.aggregate([
+      { $match: { createdAt: { $gte: thirtyDaysAgo } } },
+      {
+        $group: {
+          _id: {
+            $dateToString: { format: "%Y-%m-%d", date: "$createdAt" },
+          },
+          count: { $sum: 1 },
+        },
+      },
+      { $sort: { _id: 1 } },
+      { $project: { date: "$_id", count: 1, _id: 0 } },
+    ]);
+
+    const usersWithAge = await User.find({
+      age: { $ne: null, $gte: 0, $lte: 150 },
+    })
+      .select("age")
+      .lean();
+    const ageBuckets = [
+      { label: "0–17", min: 0, max: 17, count: 0 },
+      { label: "18–25", min: 18, max: 25, count: 0 },
+      { label: "26–35", min: 26, max: 35, count: 0 },
+      { label: "36–50", min: 36, max: 50, count: 0 },
+      { label: "51+", min: 51, max: 999, count: 0 },
+    ];
+    for (const u of usersWithAge) {
+      const a = u.age;
+      for (const b of ageBuckets) {
+        if (a >= b.min && a <= b.max) {
+          b.count += 1;
+          break;
+        }
+      }
+    }
+    const ageDistribution = ageBuckets.map(({ label, count }) => ({ label, count }));
+
+    res.json({
+      totalUsers,
+      totalCompanies,
+      totalIndividuals,
+      registrationsByDay,
+      ageDistribution,
+    });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
+router.get("/users", requireAdmin, async (req, res) => {
+  try {
+    const { accountType } = req.query;
+    const filter = {};
+    if (accountType === "company") {
+      filter.accountType = "company";
+    } else if (accountType === "individual") {
+      filter.$or = [
+        { accountType: "individual" },
+        { accountType: { $exists: false } },
+        { accountType: null },
+      ];
+    }
+    const users = await User.find(filter)
       .select("-passwordHash")
       .sort({ createdAt: -1 })
       .lean();

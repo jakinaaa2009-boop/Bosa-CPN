@@ -8,12 +8,14 @@ import {
   deleteAdminUser,
   fetchAdminUsers,
   getAdminToken,
+  type AccountType,
   type PublicUser,
 } from "@/lib/api";
 import { AdminBrandLogo } from "@/components/admin/AdminBrandLogo";
 
 export default function AdminUsersPage() {
   const router = useRouter();
+  const [tab, setTab] = useState<AccountType>("individual");
   const [users, setUsers] = useState<PublicUser[]>([]);
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState<string | null>(null);
@@ -25,14 +27,14 @@ export default function AdminUsersPage() {
     }
     setErr(null);
     try {
-      const data = await fetchAdminUsers();
+      const data = await fetchAdminUsers(tab);
       setUsers(data);
     } catch {
       setErr("Хэрэглэгчдийн жагсаалт татаагүй. Дахин нэвтэрнэ үү.");
     } finally {
       setLoading(false);
     }
-  }, [router]);
+  }, [router, tab]);
 
   useEffect(() => {
     load();
@@ -103,8 +105,39 @@ export default function AdminUsersPage() {
         <p className="text-sm font-semibold text-slate-600">
           Кампанид бүртгүүлсэн хэрэглэгчид (нууц үг харагдахгүй).
         </p>
-        <p className="mt-1 font-display text-2xl font-black text-violet-800">
-          Нийт: {loading ? "…" : users.length}
+        <div className="mt-4 flex flex-wrap gap-2">
+          <button
+            type="button"
+            onClick={() => {
+              setLoading(true);
+              setTab("individual");
+            }}
+            className={`rounded-full px-5 py-2.5 text-sm font-extrabold shadow-sm transition ${
+              tab === "individual"
+                ? "bg-violet-600 text-white ring-2 ring-violet-400"
+                : "border-2 border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
+            }`}
+          >
+            Хэрэглэгч
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              setLoading(true);
+              setTab("company");
+            }}
+            className={`rounded-full px-5 py-2.5 text-sm font-extrabold shadow-sm transition ${
+              tab === "company"
+                ? "bg-fuchsia-600 text-white ring-2 ring-fuchsia-400"
+                : "border-2 border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
+            }`}
+          >
+            Компани
+          </button>
+        </div>
+        <p className="mt-3 font-display text-2xl font-black text-violet-800">
+          {tab === "individual" ? "Хувь хүн:" : "Компани:"}{" "}
+          {loading ? "…" : users.length}
         </p>
 
         {loading && <p className="mt-6 font-bold text-slate-600">Ачаалж байна...</p>}
@@ -126,13 +159,22 @@ export default function AdminUsersPage() {
                     className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-violet-400 to-fuchsia-500 text-xl"
                     aria-hidden
                   >
-                    👤
+                    {tab === "company" ? "🏢" : "👤"}
                   </span>
                   <span className="text-xs font-bold text-slate-400">
                     {new Date(u.createdAt).toLocaleString("mn-MN")}
                   </span>
                 </div>
-                <p className="mt-3 font-display text-lg font-black text-slate-900">
+                {tab === "company" && u.companyName ? (
+                  <p className="mt-3 font-display text-lg font-black leading-tight text-slate-900">
+                    {u.companyName}
+                  </p>
+                ) : null}
+                <p
+                  className={`font-display text-lg font-black text-slate-900 ${
+                    tab === "company" && u.companyName ? "mt-1 text-base" : "mt-3"
+                  }`}
+                >
                   {u.phone}
                 </p>
                 {u.email ? (

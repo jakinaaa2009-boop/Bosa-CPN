@@ -47,6 +47,13 @@ router.post("/", requireUser, uploadReceipt.single("receipt"), async (req, res) 
       return res.status(400).json({ error: "Үнийн дүн зөв оруулна уу" });
     }
 
+    const productCountRaw =
+      req.body.productCount ?? req.body.product_count ?? "1";
+    const productCount = Math.max(
+      1,
+      Math.floor(parseInt(String(productCountRaw), 10)) || 1
+    );
+
     const dup = await Submission.findOne({ receiptNumber });
     if (dup) {
       return res.status(409).json({
@@ -59,6 +66,8 @@ router.post("/", requireUser, uploadReceipt.single("receipt"), async (req, res) 
       userId: account._id,
       receiptNumber,
       totalAmount,
+      productCount,
+      lotteryEntries: productCount,
       fullName: "",
       productName: "",
       phone: account.phone,
@@ -86,8 +95,47 @@ router.get("/", requireAdmin, async (req, res) => {
     if (status && ["pending", "approved", "rejected"].includes(status)) {
       filter.status = status;
     }
-    const list = await Submission.find(filter).sort({ createdAt: -1 });
+    const list = await Submission.find(filter).sort({ createdAt: -1 }).lean();
     res.json(list);
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
+router.patch("/:id", requireAdmin, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status, lotteryEntries, productCount } = req.body;
+    const updates = {};
+    if (status !== undefined) {
+      if (!["pending", "approved", "rejected"].includes(status)) {
+        return res.status(400).json({ error: "Invalid status" });
+      }
+      updates.status = status;
+    }
+    if (lotteryEntries !== undefined) {
+      const n = Math.floor(Number(lotteryEntries));
+      if (Number.isNaN(n) || n < 1) {
+        return res.status(400).json({ error: "Сугалааны эрх 1-ээс багагүй байна" });
+      }
+      updates.lotteryEntries = n;
+    }
+    if (productCount !== undefined) {
+      const n = Math.floor(Number(productCount));
+      if (Number.isNaN(n) || n < 1) {
+        return res.status(400).json({ error: "Бүтээгдэхүүний тоо 1-ээс багагүй байна" });
+      }
+      updates.productCount = n;
+    }
+    if (Object.keys(updates).length === 0) {
+      return res.status(400).json({ error: "No valid fields" });
+    }
+    const doc = await Submission.findByIdAndUpdate(id, updates, {
+      new: true,
+    }).lean();
+    if (!doc) return res.status(404).json({ error: "Not found" });
+    res.json(doc);
   } catch (e) {
     console.error(e);
     res.status(500).json({ error: "Server error" });

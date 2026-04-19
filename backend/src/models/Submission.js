@@ -11,6 +11,10 @@ const submissionSchema = new mongoose.Schema(
     receiptNumber: { type: String, trim: true, default: "" },
     /** Үнийн дүн (төгрөг) */
     totalAmount: { type: Number, default: null },
+    /** Нэг баримт дээрх бүтээгдэхүүний тоо → сугалааны эрхийн суурь */
+    productCount: { type: Number, min: 1, default: 1 },
+    /** Сугалааны эрх (админ засах боломжтой; эсвэл productCount-тай тэнцүү) */
+    lotteryEntries: { type: Number, min: 1, default: 1 },
     /** Legacy */
     fullName: { type: String, trim: true, default: "" },
     productName: { type: String, trim: true, default: "" },

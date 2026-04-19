@@ -8,6 +8,7 @@ import {
   loginUser,
   registerUser,
   setUserToken,
+  type AccountType,
   type UserProfile,
 } from "@/lib/api";
 
@@ -23,6 +24,8 @@ export function UserAuthPanel({ onAuthenticated }: Props) {
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
   const [age, setAge] = useState("");
+  const [accountType, setAccountType] = useState<AccountType>("individual");
+  const [companyName, setCompanyName] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -48,6 +51,10 @@ export function UserAuthPanel({ onAuthenticated }: Props) {
   async function handleRegister(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
+    if (accountType === "company" && companyName.trim().length < 2) {
+      setError("Компанийн нэрийг оруулна уу (хамгийн багадаа 2 тэмдэгт).");
+      return;
+    }
     setLoading(true);
     try {
       const { token, user } = await registerUser({
@@ -55,6 +62,9 @@ export function UserAuthPanel({ onAuthenticated }: Props) {
         password,
         email: email.trim() || undefined,
         age: age.trim() || undefined,
+        accountType,
+        companyName:
+          accountType === "company" ? companyName.trim() : undefined,
       });
       setUserToken(token);
       onAuthenticated(user);
@@ -180,6 +190,54 @@ export function UserAuthPanel({ onAuthenticated }: Props) {
             onSubmit={handleRegister}
             className="mt-8 space-y-4"
           >
+            <div>
+              <span className={labelClass}>Бүртгэлийн төрөл</span>
+              <div className="mt-2 grid grid-cols-2 gap-2 rounded-[1.25rem] bg-white/70 p-1.5 shadow-inner ring-2 ring-fuchsia-100">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setAccountType("individual");
+                    setCompanyName("");
+                    setError(null);
+                  }}
+                  className={`rounded-2xl py-3 text-sm font-black transition md:text-base ${
+                    accountType === "individual"
+                      ? "bg-gradient-to-r from-fuchsia-500 to-orange-400 text-white shadow-md"
+                      : "text-slate-600 hover:bg-white/80"
+                  }`}
+                >
+                  Хэрэглэгч
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setAccountType("company");
+                    setError(null);
+                  }}
+                  className={`rounded-2xl py-3 text-sm font-black transition md:text-base ${
+                    accountType === "company"
+                      ? "bg-gradient-to-r from-violet-500 to-cyan-400 text-white shadow-md"
+                      : "text-slate-600 hover:bg-white/80"
+                  }`}
+                >
+                  Компани
+                </button>
+              </div>
+            </div>
+            {accountType === "company" && (
+              <label className="block">
+                <span className={labelClass}>Компанийн нэр</span>
+                <input
+                  required
+                  type="text"
+                  autoComplete="organization"
+                  value={companyName}
+                  onChange={(e) => setCompanyName(e.target.value)}
+                  className={inputClass}
+                  placeholder="Жишээ: Монгол ХХК"
+                />
+              </label>
+            )}
             <label className="block">
               <span className={labelClass}>Утасны дугаар (хэрэглэгчийн нэр)</span>
               <input

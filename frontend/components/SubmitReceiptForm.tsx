@@ -36,9 +36,18 @@ function statusLabel(s: Submission["status"]): string {
   return "Хүлээгдэж буй";
 }
 
+function lotteryEntriesForDisplay(s: Submission): number {
+  return Math.max(1, s.lotteryEntries ?? s.productCount ?? 1);
+}
+
+function productCountForDisplay(s: Submission): number {
+  return Math.max(1, s.productCount ?? 1);
+}
+
 export function SubmitReceiptForm({ user, onLogout }: Props) {
   const [receiptNumber, setReceiptNumber] = useState("");
   const [totalAmount, setTotalAmount] = useState("");
+  const [productCount, setProductCount] = useState("1");
   const [file, setFile] = useState<File | null>(null);
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [message, setMessage] = useState("");
@@ -93,11 +102,18 @@ export function SubmitReceiptForm({ user, onLogout }: Props) {
       setMessage("Үнийн дүн зөв оруулна уу.");
       return;
     }
+    const pc = Math.floor(Number(String(productCount).trim()));
+    if (Number.isNaN(pc) || pc < 1) {
+      setStatus("error");
+      setMessage("Бүтээгдэхүүний тоо 1-ээс багагүй байна.");
+      return;
+    }
     setStatus("loading");
     setMessage("");
     const fd = new FormData();
     fd.append("receiptNumber", receiptNumber.toUpperCase());
     fd.append("totalAmount", String(amt));
+    fd.append("productCount", String(pc));
     fd.append("receipt", file);
     try {
       const res = await submitReceipt(fd);
@@ -105,6 +121,7 @@ export function SubmitReceiptForm({ user, onLogout }: Props) {
       setMessage(res.message || "Амжилттай илгээгдлээ!");
       setReceiptNumber("");
       setTotalAmount("");
+      setProductCount("1");
       setFile(null);
       if (listOpen) void loadMySubmissions();
     } catch (err) {
@@ -120,6 +137,11 @@ export function SubmitReceiptForm({ user, onLogout }: Props) {
           <p>
             <span className="text-fuchsia-700">Утас:</span> {user.phone}
           </p>
+          {user.accountType === "company" && user.companyName?.trim() ? (
+            <p className="mt-1">
+              <span className="text-fuchsia-700">Компани:</span> {user.companyName}
+            </p>
+          ) : null}
           {user.email ? (
             <p className="mt-1">
               <span className="text-fuchsia-700">И-мэйл:</span> {user.email}
@@ -205,6 +227,10 @@ export function SubmitReceiptForm({ user, onLogout }: Props) {
                             ? `${s.totalAmount.toLocaleString("mn-MN")}₮`
                             : "—"}
                         </p>
+                        <p className="text-xs font-semibold text-violet-800">
+                          Бүтээгдэхүүн: {productCountForDisplay(s)} · Сугалааны эрх:{" "}
+                          {lotteryEntriesForDisplay(s)}
+                        </p>
                         <p className="text-xs font-semibold text-slate-500">
                           {statusLabel(s.status)} ·{" "}
                           {new Date(s.createdAt).toLocaleDateString("mn-MN")}
@@ -261,6 +287,22 @@ export function SubmitReceiptForm({ user, onLogout }: Props) {
             className="kid-input mt-2"
             placeholder="Жишээ: 25000"
           />
+        </label>
+        <label className="block">
+          <span className="text-sm font-bold text-slate-700">Бүтээгдэхүүний тоо</span>
+          <input
+            required
+            type="number"
+            min={1}
+            step={1}
+            value={productCount}
+            onChange={(e) => setProductCount(e.target.value)}
+            className="kid-input mt-2"
+            placeholder="1"
+          />
+          <p className="mt-1.5 text-xs font-semibold text-slate-500">
+            Нэг бүтээгдэхүүн = нэг сугалааны эрх. Жишээ: 4 бүтээгдэхүүн худалдан авбал 4 эрх.
+          </p>
         </label>
         <label className="block">
           <span className="text-sm font-bold text-slate-700">НӨАТ-ын баримтын зураг</span>

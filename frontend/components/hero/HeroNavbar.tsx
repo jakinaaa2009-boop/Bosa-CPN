@@ -29,25 +29,30 @@ export function HeroNavbar() {
         {/* Logo */}
         <Link
           href="/#home"
-          className="group flex shrink-0 items-center gap-2 rounded-2xl bg-white/75 px-2 py-1.5 shadow-sm ring-1 ring-white/90 transition hover:bg-white md:gap-2.5 md:px-3"
+          className="group flex shrink-0 items-center gap-1 overflow-visible rounded-2xl bg-white/75 px-1.5 py-1.5 shadow-sm ring-1 ring-white/90 transition hover:bg-white sm:gap-1.5 sm:px-2.5 md:px-3"
         >
-          <span className="relative h-8 w-[min(36vw,140px)] sm:h-9 md:h-10 md:w-[min(32vw,160px)]">
+          {/* Tight gaps + narrow logo2 box — wide empty frame made them look “miles apart” */}
+          <span className="relative h-9 w-[min(40vw,132px)] shrink-0 sm:h-10 sm:w-[min(34vw,152px)]">
             <Image
               src="/logo1.png"
               alt="Лого"
               fill
               className="object-contain object-left"
-              sizes="160px"
+              sizes="152px"
               priority
             />
           </span>
-          <span className="relative hidden h-7 w-[min(20vw,80px)] sm:block md:h-8 md:w-[min(18vw,88px)]">
+          <span
+            className="hidden h-7 w-px shrink-0 bg-gradient-to-b from-fuchsia-300/90 to-amber-300/90 sm:block"
+            aria-hidden
+          />
+          <span className="relative h-9 w-[min(34vw,118px)] shrink-0 overflow-visible sm:h-10 sm:w-[min(28vw,134px)]">
             <Image
               src="/logo2.png"
               alt="Кампанийн лого"
               fill
-              className="object-contain object-left"
-              sizes="88px"
+              className="origin-left object-contain object-left scale-[1.12] sm:scale-[1.18]"
+              sizes="134px"
               priority
             />
           </span>
