@@ -349,17 +349,21 @@ export async function loginAdmin(username: string, password: string) {
   return data as { token: string; username: string };
 }
 
-/** Баталгаажсан өдөр (календарийн өдөр, серверийн DRAW_APPROVAL_TZ_OFFSET, өгөгдмөлөөр +08:00). */
-export type ApprovalDayFilter = {
-  date: string;
+/** Баталгаажсан огнооны завсар (инклюзив, серверийн DRAW_APPROVAL_TZ_OFFSET, өгөгдмөлөөр +08:00). */
+export type ApprovalDateRangeFilter = {
+  startDate: string;
+  endDate: string;
 };
 
 export async function fetchDrawPool(
-  approvalFilter?: ApprovalDayFilter | null
+  approvalFilter?: ApprovalDateRangeFilter | null
 ): Promise<DrawPoolItem[]> {
   let path = "/api/draw/pool";
-  if (approvalFilter?.date) {
-    const q = new URLSearchParams({ date: approvalFilter.date });
+  if (approvalFilter?.startDate && approvalFilter?.endDate) {
+    const q = new URLSearchParams({
+      startDate: approvalFilter.startDate,
+      endDate: approvalFilter.endDate,
+    });
     path = `${path}?${q.toString()}`;
   }
   const res = await fetch(apiUrl(path), {
@@ -396,7 +400,7 @@ export async function submitReceipt(formData: FormData) {
 export async function spinDraw(
   prizeName: string,
   submissionIds?: string[],
-  approvalFilter?: ApprovalDayFilter | null
+  approvalFilter?: ApprovalDateRangeFilter | null
 ) {
   const res = await fetch(apiUrl("/api/draw/spin"), {
     method: "POST",
@@ -405,9 +409,13 @@ export async function spinDraw(
       prizeName,
       submissionIds:
         submissionIds && submissionIds.length ? submissionIds : undefined,
-      approvalFilter: approvalFilter?.date
-        ? { date: approvalFilter.date }
-        : undefined,
+      approvalFilter:
+        approvalFilter?.startDate && approvalFilter?.endDate
+          ? {
+              startDate: approvalFilter.startDate,
+              endDate: approvalFilter.endDate,
+            }
+          : undefined,
     }),
   });
   const data = await res.json().catch(() => ({}));

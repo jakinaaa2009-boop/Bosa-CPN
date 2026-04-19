@@ -8,7 +8,7 @@ import { DRAW_PRIZE_OPTIONS } from "@/lib/constants";
 import {
   fetchDrawPool,
   getAdminToken,
-  type ApprovalDayFilter,
+  type ApprovalDateRangeFilter,
   type DrawPoolItem,
   type Winner,
 } from "@/lib/api";
@@ -32,14 +32,26 @@ export default function AdminDrawPage() {
   const [loading, setLoading] = useState(true);
   const [banner, setBanner] = useState<string | null>(null);
 
-  /** Empty string = бүх өдөр (шүүлтгүй). */
-  const [filterDate, setFilterDate] = useState("");
+  /** Хоосон = шүүлтгүй. Хоёуланг нь бөглөж завсар идэвхжүүлнэ. */
+  const [filterStartDate, setFilterStartDate] = useState("");
+  const [filterEndDate, setFilterEndDate] = useState("");
 
-  const approvalFilter = useMemo((): ApprovalDayFilter | null => {
-    const d = filterDate.trim();
-    if (!d) return null;
-    return { date: d };
-  }, [filterDate]);
+  const approvalFilter = useMemo((): ApprovalDateRangeFilter | null => {
+    const a = filterStartDate.trim();
+    const b = filterEndDate.trim();
+    if (!a && !b) return null;
+    if (!a || !b) return null;
+    if (a > b) return null;
+    return { startDate: a, endDate: b };
+  }, [filterStartDate, filterEndDate]);
+
+  const rangeFilterInvalid =
+    Boolean(
+      (filterStartDate.trim() && !filterEndDate.trim()) ||
+        (!filterStartDate.trim() && filterEndDate.trim())
+    ) ||
+    (Boolean(filterStartDate.trim() && filterEndDate.trim()) &&
+      filterStartDate.trim() > filterEndDate.trim());
 
   const loadPool = useCallback(async () => {
     if (!getAdminToken()) {
@@ -135,44 +147,66 @@ export default function AdminDrawPage() {
         >
           Зөвхөн баталгаажсан, мөн өмнө нь сугалаанд ялагч болоогүй оролцогчид харагдана. Нэг баримтын
           сугалааны эрх хэд байна, тэр хэмжээгээр дугуй дээр тусдаа хэсэг гарна (жишээ нь 3 эрх = 3
-          хэсэг). Өдөр сонгоход зөвхөн тухайн өдөр баталгаажсан баримтууд оролцоно. Хоосон бол дугуй
+          хэсэг). Доорх огнооны завсарт баталгаажсан илгээлтүүд л сугалаанд оролцоно. Хоосон бол дугуй
           ажиллахгүй.
         </motion.p>
 
         <div className="mt-6 rounded-2xl border-4 border-white bg-white/90 p-5 shadow-card backdrop-blur-md">
           <p className="font-display text-base font-black text-slate-900">
-            Баталгаажсан өдрөөр шүүх
+            Баталгаажсан огнооны завсар
           </p>
           <p className="mt-1 text-sm font-semibold text-slate-600">
-            Сонгосон календарийн өдрийн бүх цагт баталгаажсан илгээлтүүд оролцоно. Өдрийн хязгаар нь
-            серверийн цагийн бүсээр тооцогдоно (
+            Зөвхөн сонгосон эхлэх ба дуусах өдрийн хооронд (орсон) баталгаажсан баримтууд оролцоно.
+            Хоёуланг нь хоосон үлдэвэл бүх баталгаажсан илгээлтүүд харагдана. Огноо нь серверийн
+            цагийн бүсээр (
             <code className="rounded bg-slate-100 px-1 text-xs">DRAW_APPROVAL_TZ_OFFSET</code>
-            , өгөгдмөлөөр +08:00).
+            , өгөгдмөлөөр +08:00) тооцогдоно.
           </p>
-          <div className="mt-4 flex flex-wrap items-end gap-3">
-            <label className="min-w-[200px] flex-1">
-              <span className="text-xs font-extrabold uppercase text-slate-500">Өдөр</span>
+          {rangeFilterInvalid && (
+            <p className="mt-3 rounded-xl bg-amber-100 px-3 py-2 text-sm font-bold text-amber-950">
+              Эхлэх ба дуусах огноо хоёуланг нь зөв бөглөнө үү (эхлэх нь дуусахаас өмнө эсвэл тэнцүү).
+            </p>
+          )}
+          <div className="mt-4 flex flex-wrap items-end gap-4">
+            <label className="min-w-[180px] flex-1">
+              <span className="text-xs font-extrabold uppercase text-slate-500">Эхлэх өдөр</span>
               <input
                 type="date"
-                value={filterDate}
-                onChange={(e) => setFilterDate(e.target.value)}
+                value={filterStartDate}
+                onChange={(e) => setFilterStartDate(e.target.value)}
+                className="mt-1 w-full rounded-xl border-2 border-slate-200 bg-white px-3 py-2.5 font-bold text-slate-900"
+              />
+            </label>
+            <label className="min-w-[180px] flex-1">
+              <span className="text-xs font-extrabold uppercase text-slate-500">Дуусах өдөр</span>
+              <input
+                type="date"
+                value={filterEndDate}
+                onChange={(e) => setFilterEndDate(e.target.value)}
                 className="mt-1 w-full rounded-xl border-2 border-slate-200 bg-white px-3 py-2.5 font-bold text-slate-900"
               />
             </label>
             <div className="flex flex-wrap gap-2 pb-0.5">
               <button
                 type="button"
-                onClick={() => setFilterDate(new Date().toISOString().slice(0, 10))}
+                onClick={() => {
+                  const t = new Date().toISOString().slice(0, 10);
+                  setFilterStartDate(t);
+                  setFilterEndDate(t);
+                }}
                 className="rounded-xl bg-violet-100 px-4 py-2.5 text-sm font-extrabold text-violet-900"
               >
-                Өнөөдөр
+                Зөвхөн өнөөдөр
               </button>
               <button
                 type="button"
-                onClick={() => setFilterDate("")}
+                onClick={() => {
+                  setFilterStartDate("");
+                  setFilterEndDate("");
+                }}
                 className="rounded-xl border-2 border-slate-200 bg-white px-4 py-2.5 text-sm font-extrabold text-slate-700"
               >
-                Бүгд (өдөр шүүлтгүй)
+                Бүгд (огноо шүүлтгүй)
               </button>
             </div>
           </div>
@@ -249,8 +283,8 @@ export default function AdminDrawPage() {
                 ))}
                 {pool.length === 0 && (
                   <li className="p-4 text-center font-bold text-slate-500">
-                    {filterDate.trim()
-                      ? "Энэ өдөр баталгаажсан, мөн ялагч болоогүй оролцогч алга."
+                    {approvalFilter
+                      ? "Энэ огнооны завсарт баталгаажсан, мөн ялагч болоогүй оролцогч алга."
                       : "Оролцогч алга. Эхлээд хүсэлтүүдийг батална уу."}
                   </li>
                 )}

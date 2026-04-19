@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import { motion, useMotionValue, animate } from "framer-motion";
 import {
   spinDraw,
-  type ApprovalDayFilter,
+  type ApprovalDateRangeFilter,
   type DrawPoolItem,
   type Winner,
 } from "@/lib/api";
@@ -14,7 +14,7 @@ type Props = {
   selectedIds: Set<string>;
   prizeName: string;
   /** Same filter as pool fetch; omit or null = all approved (any day). */
-  approvalFilter?: ApprovalDayFilter | null;
+  approvalFilter?: ApprovalDateRangeFilter | null;
   onWinnerSaved: (w: Winner) => void;
 };
 
