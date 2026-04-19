@@ -8,7 +8,7 @@ import { DRAW_PRIZE_OPTIONS } from "@/lib/constants";
 import {
   fetchDrawPool,
   getAdminToken,
-  type ApprovalTimeFilter,
+  type ApprovalDayFilter,
   type DrawPoolItem,
   type Winner,
 } from "@/lib/api";
@@ -32,17 +32,14 @@ export default function AdminDrawPage() {
   const [loading, setLoading] = useState(true);
   const [banner, setBanner] = useState<string | null>(null);
 
-  const [timeFilterEnabled, setTimeFilterEnabled] = useState(false);
-  const [filterDate, setFilterDate] = useState(() =>
-    new Date().toISOString().slice(0, 10)
-  );
-  const [filterFrom, setFilterFrom] = useState("04:20");
-  const [filterTo, setFilterTo] = useState("04:30");
+  /** Empty string = бүх өдөр (шүүлтгүй). */
+  const [filterDate, setFilterDate] = useState("");
 
-  const approvalFilter = useMemo((): ApprovalTimeFilter | null => {
-    if (!timeFilterEnabled) return null;
-    return { date: filterDate, from: filterFrom, to: filterTo };
-  }, [timeFilterEnabled, filterDate, filterFrom, filterTo]);
+  const approvalFilter = useMemo((): ApprovalDayFilter | null => {
+    const d = filterDate.trim();
+    if (!d) return null;
+    return { date: d };
+  }, [filterDate]);
 
   const loadPool = useCallback(async () => {
     if (!getAdminToken()) {
@@ -138,61 +135,47 @@ export default function AdminDrawPage() {
         >
           Зөвхөн баталгаажсан, мөн өмнө нь сугалаанд ялагч болоогүй оролцогчид харагдана. Нэг баримтын
           сугалааны эрх хэд байна, тэр хэмжээгээр дугуй дээр тусдаа хэсэг гарна (жишээ нь 3 эрх = 3
-          хэсэг). Доорх цагийн завсраар зөвхөн тухайн хугацаанд баталгаажсан баримтуудыг сугалаанд
-          оруулж болно. Хоосон бол дугуй ажиллахгүй.
+          хэсэг). Өдөр сонгоход зөвхөн тухайн өдөр баталгаажсан баримтууд оролцоно. Хоосон бол дугуй
+          ажиллахгүй.
         </motion.p>
 
         <div className="mt-6 rounded-2xl border-4 border-white bg-white/90 p-5 shadow-card backdrop-blur-md">
-          <label className="flex cursor-pointer items-start gap-3">
-            <input
-              type="checkbox"
-              checked={timeFilterEnabled}
-              onChange={(e) => setTimeFilterEnabled(e.target.checked)}
-              className="mt-1 h-5 w-5 shrink-0"
-            />
-            <span>
-              <span className="font-display text-base font-black text-slate-900">
-                Баталгаажсан цагийн завсраар шүүх
-              </span>
-              <span className="mt-1 block text-sm font-semibold text-slate-600">
-                Зөвхөн сонгосон өдөр, цагийн хооронд баталгаажсан баримтууд оролцоно. Цаг нь серверийн
-                тохиргоонд байгаа завсарт (өгөгдмөлөөр UTC+8,{" "}
-                <code className="rounded bg-slate-100 px-1 text-xs">DRAW_APPROVAL_TZ_OFFSET</code>
-                ).
-              </span>
-            </span>
-          </label>
-          {timeFilterEnabled && (
-            <div className="mt-4 grid gap-4 sm:grid-cols-3">
-              <label className="block">
-                <span className="text-xs font-extrabold uppercase text-slate-500">Өдөр</span>
-                <input
-                  type="date"
-                  value={filterDate}
-                  onChange={(e) => setFilterDate(e.target.value)}
-                  className="mt-1 w-full rounded-xl border-2 border-slate-200 bg-white px-3 py-2 font-bold text-slate-900"
-                />
-              </label>
-              <label className="block">
-                <span className="text-xs font-extrabold uppercase text-slate-500">Эхлэх (цаг)</span>
-                <input
-                  type="time"
-                  value={filterFrom}
-                  onChange={(e) => setFilterFrom(e.target.value)}
-                  className="mt-1 w-full rounded-xl border-2 border-slate-200 bg-white px-3 py-2 font-bold text-slate-900"
-                />
-              </label>
-              <label className="block">
-                <span className="text-xs font-extrabold uppercase text-slate-500">Дуусах (цаг)</span>
-                <input
-                  type="time"
-                  value={filterTo}
-                  onChange={(e) => setFilterTo(e.target.value)}
-                  className="mt-1 w-full rounded-xl border-2 border-slate-200 bg-white px-3 py-2 font-bold text-slate-900"
-                />
-              </label>
+          <p className="font-display text-base font-black text-slate-900">
+            Баталгаажсан өдрөөр шүүх
+          </p>
+          <p className="mt-1 text-sm font-semibold text-slate-600">
+            Сонгосон календарийн өдрийн бүх цагт баталгаажсан илгээлтүүд оролцоно. Өдрийн хязгаар нь
+            серверийн цагийн бүсээр тооцогдоно (
+            <code className="rounded bg-slate-100 px-1 text-xs">DRAW_APPROVAL_TZ_OFFSET</code>
+            , өгөгдмөлөөр +08:00).
+          </p>
+          <div className="mt-4 flex flex-wrap items-end gap-3">
+            <label className="min-w-[200px] flex-1">
+              <span className="text-xs font-extrabold uppercase text-slate-500">Өдөр</span>
+              <input
+                type="date"
+                value={filterDate}
+                onChange={(e) => setFilterDate(e.target.value)}
+                className="mt-1 w-full rounded-xl border-2 border-slate-200 bg-white px-3 py-2.5 font-bold text-slate-900"
+              />
+            </label>
+            <div className="flex flex-wrap gap-2 pb-0.5">
+              <button
+                type="button"
+                onClick={() => setFilterDate(new Date().toISOString().slice(0, 10))}
+                className="rounded-xl bg-violet-100 px-4 py-2.5 text-sm font-extrabold text-violet-900"
+              >
+                Өнөөдөр
+              </button>
+              <button
+                type="button"
+                onClick={() => setFilterDate("")}
+                className="rounded-xl border-2 border-slate-200 bg-white px-4 py-2.5 text-sm font-extrabold text-slate-700"
+              >
+                Бүгд (өдөр шүүлтгүй)
+              </button>
             </div>
-          )}
+          </div>
         </div>
 
         <div className="mt-6 rounded-2xl bg-white/80 p-6 shadow-card backdrop-blur-md">
@@ -266,8 +249,8 @@ export default function AdminDrawPage() {
                 ))}
                 {pool.length === 0 && (
                   <li className="p-4 text-center font-bold text-slate-500">
-                    {timeFilterEnabled
-                      ? "Энэ цагийн завсарт баталгаажсан, мөн ялагч болоогүй оролцогч алга."
+                    {filterDate.trim()
+                      ? "Энэ өдөр баталгаажсан, мөн ялагч болоогүй оролцогч алга."
                       : "Оролцогч алга. Эхлээд хүсэлтүүдийг батална уу."}
                   </li>
                 )}
