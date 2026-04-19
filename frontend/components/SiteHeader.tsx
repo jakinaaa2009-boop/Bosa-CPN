@@ -3,16 +3,22 @@
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { NAV_LINKS, SUBMIT_PAGE_HREF } from "@/lib/constants";
 
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
+  const reduceMotion = useReducedMotion();
   const mainLinks = NAV_LINKS.filter((l) => l.href !== SUBMIT_PAGE_HREF);
   const cta = NAV_LINKS.find((l) => l.href === SUBMIT_PAGE_HREF);
 
   return (
-    <header className="sticky top-0 z-50 px-2 pt-2 md:px-4 md:pt-3">
+    <motion.header
+      initial={reduceMotion ? false : { opacity: 0, y: -18 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: reduceMotion ? 0 : 0.5, ease: [0.22, 1, 0.36, 1] }}
+      className="sticky top-0 z-50 px-2 pt-2 md:px-4 md:pt-3"
+    >
       <div className="mx-auto max-w-6xl overflow-hidden rounded-[1.75rem] border-4 border-white/90 bg-gradient-to-r from-pink-200/95 via-amber-100/95 to-cyan-200/95 backdrop-blur-md md:rounded-[2rem] [box-shadow:0_12px_40px_rgba(236,72,153,0.2),inset_0_2px_0_rgba(255,255,255,0.9),0_4px_0_rgba(255,255,255,0.5)]">
         <div className="flex items-center gap-2 px-3 py-2.5 sm:gap-3 sm:px-4 sm:py-3 md:px-5">
           {/* Logos — shared height, proportional widths */}
@@ -84,7 +90,7 @@ export function SiteHeader() {
               >
                 <Link
                   href={cta.href}
-                  className="block whitespace-nowrap rounded-full bg-gradient-to-r from-fuchsia-500 via-orange-400 to-amber-400 px-4 py-2.5 text-center text-[11px] font-black text-white shadow-[0_4px_0_rgb(180,50,120),0_8px_24px_rgba(236,72,153,0.45)] ring-2 ring-white/50 transition hover:brightness-110 xl:px-5 xl:text-sm"
+                  className="idle-float block whitespace-nowrap rounded-full bg-gradient-to-r from-fuchsia-500 via-orange-400 to-amber-400 px-4 py-2.5 text-center text-[11px] font-black text-white shadow-[0_4px_0_rgb(180,50,120),0_8px_24px_rgba(236,72,153,0.45)] ring-2 ring-white/50 transition hover:brightness-110 xl:px-5 xl:text-sm"
                 >
                   📸 {cta.label}
                 </Link>
@@ -139,6 +145,6 @@ export function SiteHeader() {
           )}
         </AnimatePresence>
       </div>
-    </header>
+    </motion.header>
   );
 }

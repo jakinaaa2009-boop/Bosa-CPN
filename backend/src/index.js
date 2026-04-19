@@ -32,6 +32,22 @@ const corsAllowVercel =
   process.env.CORS_ALLOW_VERCEL === "1" ||
   process.env.CORS_ALLOW_VERCEL === "true";
 
+/** Allow http://localhost:* and http://127.0.0.1:* (local Next.js hitting deployed API). */
+const corsAllowLocalhost =
+  process.env.CORS_ALLOW_LOCALHOST === "1" ||
+  process.env.CORS_ALLOW_LOCALHOST === "true";
+
+function isLocalDevOrigin(o) {
+  try {
+    const u = new URL(o);
+    if (u.protocol !== "http:" && u.protocol !== "https:") return false;
+    if (u.hostname !== "localhost" && u.hostname !== "127.0.0.1") return false;
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 function corsOriginValidator(origin, callback) {
   if (!origin) {
     callback(null, true);
@@ -39,6 +55,10 @@ function corsOriginValidator(origin, callback) {
   }
   const o = normalizeCorsOrigin(origin);
   if (corsAllowed.includes(o)) {
+    callback(null, true);
+    return;
+  }
+  if (corsAllowLocalhost && isLocalDevOrigin(o)) {
     callback(null, true);
     return;
   }

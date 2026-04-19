@@ -232,7 +232,7 @@ export function SubmitReceiptForm({ user, onLogout }: Props) {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         onSubmit={handleSubmit}
-        className="space-y-5 rounded-[2rem] border-4 border-white bg-gradient-to-br from-cyan-50 via-white to-pink-50 p-8 shadow-card md:p-10"
+        className="kid-card space-y-5 bg-gradient-to-br from-cyan-50 via-white to-pink-50 p-8 md:p-10"
       >
         <label className="block">
           <span className="text-sm font-bold text-slate-700">Баримтын дугаар</span>
@@ -240,7 +240,7 @@ export function SubmitReceiptForm({ user, onLogout }: Props) {
             required
             value={receiptNumber}
             onChange={(e) => setReceiptNumber(formatReceiptInput(e.target.value))}
-            className="mt-2 w-full rounded-2xl border-2 border-slate-200 px-4 py-3 font-mono font-bold uppercase tracking-wider outline-none ring-fuchsia-300 focus:border-fuchsia-400 focus:ring-4"
+            className="kid-input mt-2 font-mono font-bold uppercase tracking-wider"
             placeholder={RECEIPT_PLACEHOLDER}
             maxLength={10}
             autoComplete="off"
@@ -258,7 +258,7 @@ export function SubmitReceiptForm({ user, onLogout }: Props) {
             step={1}
             value={totalAmount}
             onChange={(e) => setTotalAmount(e.target.value)}
-            className="mt-2 w-full rounded-2xl border-2 border-slate-200 px-4 py-3 font-semibold outline-none focus:border-fuchsia-400 focus:ring-4 focus:ring-fuchsia-200"
+            className="kid-input mt-2"
             placeholder="Жишээ: 25000"
           />
         </label>
@@ -293,7 +293,7 @@ export function SubmitReceiptForm({ user, onLogout }: Props) {
           disabled={status === "loading"}
           whileHover={{ scale: status === "loading" ? 1 : 1.02 }}
           whileTap={{ scale: status === "loading" ? 1 : 0.98 }}
-          className="w-full rounded-2xl bg-gradient-to-r from-violet-500 via-fuchsia-500 to-orange-400 py-4 text-lg font-extrabold text-white shadow-lg disabled:opacity-60"
+          className="kid-btn-primary w-full py-4 text-lg disabled:opacity-60"
         >
           {status === "loading" ? "Илгээж байна..." : "Илгээх 🚀"}
         </motion.button>

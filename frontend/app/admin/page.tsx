@@ -53,7 +53,7 @@ export default function AdminPage() {
               autoComplete="username"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              className="mt-2 w-full rounded-2xl border-2 border-slate-200 px-4 py-3 font-semibold outline-none focus:border-violet-500 focus:ring-4 focus:ring-violet-200"
+              className="kid-input mt-2"
             />
           </label>
           <label className="block">
@@ -64,7 +64,7 @@ export default function AdminPage() {
               autoComplete="current-password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="mt-2 w-full rounded-2xl border-2 border-slate-200 px-4 py-3 font-semibold outline-none focus:border-violet-500 focus:ring-4 focus:ring-violet-200"
+              className="kid-input mt-2"
             />
           </label>
           {error && (
@@ -76,7 +76,7 @@ export default function AdminPage() {
             type="submit"
             disabled={loading}
             whileHover={{ scale: loading ? 1 : 1.02 }}
-            className="w-full rounded-2xl bg-gradient-to-r from-violet-600 to-fuchsia-600 py-3 font-extrabold text-white shadow-lg disabled:opacity-60"
+            className="kid-btn-primary w-full py-3 disabled:opacity-60"
           >
             {loading ? "Түр хүлээнэ үү..." : "Нэвтрэх"}
           </motion.button>

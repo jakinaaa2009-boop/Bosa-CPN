@@ -3,31 +3,39 @@
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { PROMO_PRODUCTS } from "@/lib/constants";
+import { viewportOnce } from "@/lib/motion";
 
 export function ProductGrid() {
   return (
     <section id="products" className="px-4 py-16 md:py-24">
       <div className="mx-auto max-w-6xl">
         <motion.h2
-          initial={{ opacity: 0, y: 12 }}
+          initial={{ opacity: 0, y: 14 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
+          viewport={viewportOnce}
+          transition={{ type: "spring", stiffness: 240, damping: 24 }}
           className="font-display text-center text-3xl font-extrabold text-slate-900 md:text-4xl"
         >
           Урамшууллын бүтээгдэхүүнүүд
         </motion.h2>
-        <p className="mx-auto mt-3 max-w-2xl text-center text-lg font-semibold text-slate-600">
+        <motion.p
+          initial={{ opacity: 0, y: 10 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={viewportOnce}
+          transition={{ delay: 0.06, duration: 0.4 }}
+          className="mx-auto mt-3 max-w-2xl text-center text-lg font-semibold text-slate-600"
+        >
           Кампанийн үед эдгээр бүтээгдэхүүнүүдийг сонгон худалдан авалт хийж оролцоно уу!
-        </p>
+        </motion.p>
         <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {PROMO_PRODUCTS.map((p, i) => (
             <motion.article
               key={p.id}
-              initial={{ opacity: 0, y: 24 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-30px" }}
-              transition={{ delay: (i % 3) * 0.05, type: "spring", stiffness: 200, damping: 22 }}
-              whileHover={{ y: -10 }}
+              initial={{ opacity: 0, y: 28, rotate: -1 }}
+              whileInView={{ opacity: 1, y: 0, rotate: 0 }}
+              viewport={{ once: true, margin: "-40px" }}
+              transition={{ delay: (i % 6) * 0.06, type: "spring", stiffness: 210, damping: 22 }}
+              whileHover={{ y: -10, rotate: i % 2 === 0 ? 1.2 : -1.2 }}
               className={`group relative overflow-hidden rounded-[1.75rem] bg-gradient-to-br ${p.accent} p-[3px] shadow-card`}
             >
               <div className="flex h-full flex-col rounded-[1.65rem] bg-white p-4">

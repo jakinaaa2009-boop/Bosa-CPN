@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import {
   clearUserSession,
   fetchUserMe,
@@ -10,10 +10,12 @@ import {
 } from "@/lib/api";
 import { UserAuthPanel } from "./UserAuthPanel";
 import { SubmitReceiptForm } from "./SubmitReceiptForm";
+import { viewportOnce } from "@/lib/motion";
 
 export function SubmitReceiptSection() {
   const [user, setUser] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
+  const reduceMotion = useReducedMotion();
 
   useEffect(() => {
     const t = getUserToken();
@@ -36,15 +38,17 @@ export function SubmitReceiptSection() {
         <motion.h2
           initial={{ opacity: 0, y: 12 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
+          viewport={viewportOnce}
+          transition={{ type: "spring", stiffness: 260, damping: 24 }}
           className="font-display text-center text-3xl font-extrabold text-slate-900 md:text-4xl"
         >
           Баримт оруулах
         </motion.h2>
         <motion.p
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
+          initial={{ opacity: 0, y: 8 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={viewportOnce}
+          transition={{ delay: 0.06, duration: 0.4 }}
           className="mt-3 text-center text-lg font-semibold text-slate-600"
         >
           {user
@@ -53,9 +57,13 @@ export function SubmitReceiptSection() {
         </motion.p>
 
         {loading ? (
-          <p className="mt-12 text-center font-display text-lg font-bold text-fuchsia-600">
+          <motion.p
+            className="mt-12 text-center font-display text-lg font-bold text-fuchsia-600"
+            animate={reduceMotion ? undefined : { opacity: [0.4, 1, 0.4] }}
+            transition={{ duration: 1.1, repeat: Infinity, ease: "easeInOut" }}
+          >
             Ачаалж байна...
-          </p>
+          </motion.p>
         ) : user ? (
           <SubmitReceiptForm user={user} onLogout={() => setUser(null)} />
         ) : (

@@ -27,7 +27,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="mn" className={`${display.variable} ${body.variable}`}>
-      <body className="font-sans min-h-screen">{children}</body>
+      <body className="font-sans min-h-screen">
+        <div className="min-h-screen kid-surface">{children}</div>
+      </body>
     </html>
   );
 }

@@ -74,15 +74,14 @@ export function UserAuthPanel({ onAuthenticated }: Props) {
     }
   }
 
-  const inputClass =
-    "mt-2 w-full rounded-2xl border-4 border-fuchsia-200/80 bg-white px-4 py-3.5 font-bold text-slate-800 shadow-inner outline-none transition focus:border-orange-300 focus:ring-4 focus:ring-amber-200/60";
+  const inputClass = "kid-input mt-2 px-4 py-3.5 font-bold";
   const labelClass = "text-sm font-extrabold text-slate-800";
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
-      className="mx-auto mt-8 max-w-lg overflow-hidden rounded-[2rem] border-4 border-white bg-gradient-to-br from-pink-50 via-white to-amber-50 p-6 shadow-[0_16px_48px_rgba(236,72,153,0.18)] md:p-8"
+      className="kid-card mx-auto mt-8 max-w-lg overflow-hidden bg-gradient-to-br from-pink-50 via-white to-amber-50 p-6 md:p-8"
     >
       <Link
         href="/"
@@ -166,7 +165,7 @@ export function UserAuthPanel({ onAuthenticated }: Props) {
               disabled={loading}
               whileHover={{ scale: loading ? 1 : 1.02 }}
               whileTap={{ scale: loading ? 1 : 0.98 }}
-              className="w-full rounded-2xl bg-gradient-to-r from-fuchsia-500 via-orange-400 to-amber-400 py-4 text-lg font-black text-white shadow-[0_6px_0_rgb(180,60,120),0_12px_32px_rgba(236,72,153,0.35)] disabled:opacity-60"
+              className="kid-btn-primary w-full py-4 text-lg disabled:opacity-60"
             >
               {loading ? "Түр хүлээнэ үү..." : "Нэвтрэх 🎉"}
             </motion.button>
@@ -237,7 +236,7 @@ export function UserAuthPanel({ onAuthenticated }: Props) {
               disabled={loading}
               whileHover={{ scale: loading ? 1 : 1.02 }}
               whileTap={{ scale: loading ? 1 : 0.98 }}
-              className="w-full rounded-2xl bg-gradient-to-r from-violet-500 via-fuchsia-500 to-cyan-400 py-4 text-lg font-black text-white shadow-[0_6px_0_rgb(100,50,160),0_12px_32px_rgba(139,92,246,0.35)] disabled:opacity-60"
+              className="kid-btn-primary w-full py-4 text-lg disabled:opacity-60"
             >
               {loading ? "Түр хүлээнэ үү..." : "Бүртгүүлэх ✨"}
             </motion.button>

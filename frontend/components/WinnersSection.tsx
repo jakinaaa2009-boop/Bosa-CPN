@@ -1,14 +1,16 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { fetchWinners, type Winner } from "@/lib/api";
 import { formatMongolianDate } from "@/lib/formatMongolianDate";
+import { staggerContainer, staggerItem, viewportOnce } from "@/lib/motion";
 
 export function WinnersSection() {
   const [winners, setWinners] = useState<Winner[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const reduceMotion = useReducedMotion();
 
   useEffect(() => {
     let cancelled = false;
@@ -42,21 +44,34 @@ export function WinnersSection() {
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(250,204,21,0.25),transparent_55%)]" />
       <div className="relative mx-auto max-w-6xl">
         <motion.h2
-          initial={{ opacity: 0, y: 12 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
+          initial={{ opacity: 0, y: 14, scale: 0.98 }}
+          whileInView={{ opacity: 1, y: 0, scale: 1 }}
+          viewport={viewportOnce}
+          transition={{ type: "spring", stiffness: 220, damping: 20 }}
           className="font-display text-center text-3xl font-extrabold md:text-4xl"
         >
           <span className="bg-gradient-to-r from-amber-300 via-yellow-200 to-amber-400 bg-clip-text text-transparent drop-shadow-md">
             Ялагчид
           </span>
         </motion.h2>
-        <p className="mx-auto mt-3 max-w-2xl text-center text-lg font-semibold text-purple-100">
+        <motion.p
+          initial={{ opacity: 0, y: 10 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={viewportOnce}
+          transition={{ delay: 0.08, duration: 0.45 }}
+          className="mx-auto mt-3 max-w-2xl text-center text-lg font-semibold text-purple-100"
+        >
           Баяр хүргэе! Шинэ ялагчид энд харагдана — та ч гэсэн дараагийн азтан болох боломжтой!
-        </p>
+        </motion.p>
 
         {loading && (
-          <p className="mt-10 text-center font-bold text-purple-200">Ачаалж байна...</p>
+          <motion.p
+            className="mt-10 text-center font-bold text-purple-200"
+            animate={reduceMotion ? undefined : { opacity: [0.45, 1, 0.45] }}
+            transition={{ duration: 1.2, repeat: Infinity, ease: "easeInOut" }}
+          >
+            Ачаалж байна...
+          </motion.p>
         )}
         {error && (
           <p className="mt-10 text-center font-bold text-rose-300">{error}</p>
@@ -74,22 +89,19 @@ export function WinnersSection() {
           </motion.div>
         )}
 
-        <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {displayWinners.map((w, i) => (
+        <motion.div
+          variants={staggerContainer}
+          initial="hidden"
+          whileInView="show"
+          viewport={viewportOnce}
+          className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3"
+        >
+          {displayWinners.map((w) => (
             <motion.article
               key={w._id}
-              initial={{ opacity: 0, scale: 0.9 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.08 }}
-              animate={{
-                boxShadow: [
-                  "0 0 0px rgba(250,204,21,0)",
-                  "0 0 28px rgba(250,204,21,0.55)",
-                  "0 0 0px rgba(250,204,21,0)",
-                ],
-              }}
-              whileHover={{ scale: 1.03 }}
+              variants={staggerItem}
+              whileHover={{ scale: 1.04, y: -6 }}
+              transition={{ type: "spring", stiffness: 320, damping: 22 }}
               className="relative rounded-[1.75rem] border-2 border-amber-300/60 bg-gradient-to-br from-white/15 to-white/5 p-6 shadow-glow backdrop-blur-md"
             >
               <div className="absolute -right-2 -top-2 rounded-full bg-amber-400 px-3 py-1 text-xs font-black text-slate-900">
@@ -106,7 +118,7 @@ export function WinnersSection() {
               </p>
             </motion.article>
           ))}
-        </div>
+        </motion.div>
       </div>
     </section>
   );
