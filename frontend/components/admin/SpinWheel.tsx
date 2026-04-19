@@ -16,6 +16,8 @@ type Props = {
   /** Same filter as pool fetch; omit or null = all approved (any day). */
   approvalFilter?: ApprovalDateRangeFilter | null;
   onWinnerSaved: (w: Winner) => void;
+  /** Called when admin clears the winner panel (e.g. reload pool). */
+  onRefreshPool?: () => void;
 };
 
 /** Matches backend `entryWeight` / pool JSON: at least one slice per submission. */
@@ -53,6 +55,7 @@ export function SpinWheel({
   prizeName,
   approvalFilter,
   onWinnerSaved,
+  onRefreshPool,
 }: Props) {
   const rotation = useMotionValue(0);
   const [spinning, setSpinning] = useState(false);
@@ -203,12 +206,27 @@ export function SpinWheel({
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="w-full max-w-md rounded-2xl border-4 border-amber-400 bg-white p-6 text-center shadow-card"
+          className="flex w-full max-w-md flex-col gap-4"
         >
-          <p className="font-display text-xl font-black text-fuchsia-600">Ялагч тодорлоо!</p>
-          <p className="mt-2 text-2xl font-black text-slate-900">{lastWinner.winnerName}</p>
-          <p className="mt-1 font-bold text-slate-600">{lastWinner.prizeName}</p>
-          <p className="mt-2 text-sm font-semibold text-slate-500">{lastWinner.phone}</p>
+          <div className="rounded-2xl border-4 border-amber-400 bg-white p-6 text-center shadow-card">
+            <p className="font-display text-xl font-black text-fuchsia-600">Ялагч тодорлоо!</p>
+            <p className="mt-2 text-2xl font-black text-slate-900">{lastWinner.winnerName}</p>
+            <p className="mt-1 font-bold text-slate-600">{lastWinner.prizeName}</p>
+            <p className="mt-2 text-sm font-semibold text-slate-500">{lastWinner.phone}</p>
+          </div>
+          <motion.button
+            type="button"
+            onClick={() => {
+              setLastWinner(null);
+              setError(null);
+              onRefreshPool?.();
+            }}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            className="w-full rounded-2xl border-2 border-slate-300 bg-white px-6 py-3 text-sm font-extrabold text-slate-800 shadow-sm transition hover:bg-slate-50"
+          >
+            Шинэчлэх — ялагчийн мэдээллийг хаах
+          </motion.button>
         </motion.div>
       )}
     </div>

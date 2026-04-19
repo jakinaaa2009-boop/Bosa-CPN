@@ -73,14 +73,11 @@ export function HeroSection() {
               transition={{ delay: 0.06, type: "spring", stiffness: 200, damping: 22 }}
               className="font-display text-[clamp(2rem,6vw,3.75rem)] font-black leading-[1.12] tracking-tight"
             >
-              <span className="block bg-gradient-to-r from-slate-900 via-blue-900 to-indigo-900 bg-clip-text text-transparent">
-                Азын сугалааны
-              </span>
-              <span className="mt-1 block bg-gradient-to-r from-fuchsia-500 via-amber-400 to-cyan-400 bg-clip-text text-transparent">
-                кампанид
+              <span className="block bg-gradient-to-r from-fuchsia-500 via-amber-400 to-cyan-400 bg-clip-text text-transparent">
+                Урамшуулалт
               </span>
               <span className="mt-1 block bg-gradient-to-r from-indigo-700 via-violet-600 to-pink-500 bg-clip-text text-transparent">
-                оролцоорой!
+                Сугалаа
               </span>
             </motion.h1>
 

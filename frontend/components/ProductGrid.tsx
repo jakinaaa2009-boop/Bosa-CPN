@@ -18,15 +18,6 @@ export function ProductGrid() {
         >
           Урамшууллын бүтээгдэхүүнүүд
         </motion.h2>
-        <motion.p
-          initial={{ opacity: 0, y: 10 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={viewportOnce}
-          transition={{ delay: 0.06, duration: 0.4 }}
-          className="mx-auto mt-3 max-w-2xl text-center text-lg font-semibold text-slate-600"
-        >
-          Кампанийн үед эдгээр бүтээгдэхүүнүүдийг сонгон худалдан авалт хийж оролцоно уу!
-        </motion.p>
         <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {PROMO_PRODUCTS.map((p, i) => (
             <motion.article
@@ -42,15 +33,13 @@ export function ProductGrid() {
                 <div className="relative aspect-square overflow-hidden rounded-2xl">
                   <Image
                     src={p.image}
-                    alt={p.name}
+                    alt=""
                     fill
                     className="object-cover transition duration-500 group-hover:scale-110 group-hover:rotate-1"
                     sizes="(max-width: 640px) 100vw, 33vw"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 transition group-hover:opacity-100" />
                 </div>
-                <h3 className="mt-4 font-display text-lg font-bold text-slate-800">{p.name}</h3>
-                <p className="mt-1 text-sm font-bold text-fuchsia-600">Кампанийн бүтээгдэхүүн ✓</p>
               </div>
             </motion.article>
           ))}

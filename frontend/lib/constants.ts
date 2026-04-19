@@ -2,55 +2,46 @@
 export const PROMO_PRODUCTS = [
   {
     id: "1",
-    name: "Урамшууллын бүтээгдэхүүн А",
     image: "/candy1.png",
     accent: "from-pink-400 to-rose-400",
   },
   {
     id: "2",
-    name: "Урамшууллын бүтээгдэхүүн Б",
     image: "/candy2.png",
     accent: "from-amber-400 to-orange-400",
   },
   {
     id: "3",
-    name: "Урамшууллын бүтээгдэхүүн В",
     image: "/candy3.png",
     accent: "from-cyan-400 to-sky-500",
   },
   {
     id: "4",
-    name: "Урамшууллын бүтээгдэхүүн Г",
     image: "/candy4.png",
     accent: "from-violet-400 to-purple-500",
   },
   {
     id: "5",
-    name: "Урамшууллын бүтээгдэхүүн Д",
     image: "/candy5.png",
     accent: "from-emerald-400 to-teal-400",
   },
   {
     id: "6",
-    name: "Урамшууллын бүтээгдэхүүн Е",
     image: "/candy6.png",
     accent: "from-fuchsia-400 to-pink-500",
   },
   {
     id: "7",
-    name: "Урамшууллын бүтээгдэхүүн Ж",
     image: "/candy7.png",
     accent: "from-lime-400 to-green-400",
   },
   {
     id: "8",
-    name: "Урамшууллын бүтээгдэхүүн З",
     image: "/candy8.png",
     accent: "from-red-400 to-orange-400",
   },
   {
     id: "9",
-    name: "Урамшууллын бүтээгдэхүүн И",
     image: "/candy9.png",
     accent: "from-indigo-400 to-blue-500",
   },

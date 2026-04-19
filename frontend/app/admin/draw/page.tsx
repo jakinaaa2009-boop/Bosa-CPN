@@ -304,6 +304,7 @@ export default function AdminDrawPage() {
               prizeName={prizeName}
               approvalFilter={approvalFilter}
               onWinnerSaved={onWinnerSaved}
+              onRefreshPool={loadPool}
             />
           </div>
         </div>
