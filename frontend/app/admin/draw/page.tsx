@@ -1,13 +1,28 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { DRAW_PRIZE_OPTIONS } from "@/lib/constants";
-import { fetchDrawPool, getAdminToken, type DrawPoolItem, type Winner } from "@/lib/api";
+import {
+  fetchDrawPool,
+  getAdminToken,
+  type ApprovalTimeFilter,
+  type DrawPoolItem,
+  type Winner,
+} from "@/lib/api";
 import { AdminBrandLogo } from "@/components/admin/AdminBrandLogo";
 import { SpinWheel } from "@/components/admin/SpinWheel";
+
+function wheelSliceCount(p: DrawPoolItem): number {
+  return Math.max(
+    1,
+    Math.floor(Number(p.lotteryEntries)) ||
+      Math.floor(Number(p.productCount)) ||
+      1
+  );
+}
 
 export default function AdminDrawPage() {
   const router = useRouter();
@@ -17,24 +32,42 @@ export default function AdminDrawPage() {
   const [loading, setLoading] = useState(true);
   const [banner, setBanner] = useState<string | null>(null);
 
+  const [timeFilterEnabled, setTimeFilterEnabled] = useState(false);
+  const [filterDate, setFilterDate] = useState(() =>
+    new Date().toISOString().slice(0, 10)
+  );
+  const [filterFrom, setFilterFrom] = useState("04:20");
+  const [filterTo, setFilterTo] = useState("04:30");
+
+  const approvalFilter = useMemo((): ApprovalTimeFilter | null => {
+    if (!timeFilterEnabled) return null;
+    return { date: filterDate, from: filterFrom, to: filterTo };
+  }, [timeFilterEnabled, filterDate, filterFrom, filterTo]);
+
   const loadPool = useCallback(async () => {
     if (!getAdminToken()) {
       router.replace("/admin");
       return;
     }
+    setLoading(true);
+    setBanner(null);
     try {
-      const data = await fetchDrawPool();
+      const data = await fetchDrawPool(approvalFilter);
       setPool(data);
     } catch {
       setBanner("Сугалааны жагсаалт татаагүй байна.");
     } finally {
       setLoading(false);
     }
-  }, [router]);
+  }, [router, approvalFilter]);
 
   useEffect(() => {
     loadPool();
   }, [loadPool]);
+
+  useEffect(() => {
+    setSelected(new Set());
+  }, [approvalFilter]);
 
   function toggle(id: string) {
     setSelected((prev) => {
@@ -103,9 +136,64 @@ export default function AdminDrawPage() {
           animate={{ opacity: 1 }}
           className="text-center text-sm font-semibold text-slate-600"
         >
-          Зөвхөн баталгаажсан, мөн өмнө нь сугалаанд ялагч болоогүй оролцогчид харагдана. Хэзээ ч
-          хоосон бол дугуй ажиллахгүй.
+          Зөвхөн баталгаажсан, мөн өмнө нь сугалаанд ялагч болоогүй оролцогчид харагдана. Нэг баримтын
+          сугалааны эрх хэд байна, тэр хэмжээгээр дугуй дээр тусдаа хэсэг гарна (жишээ нь 3 эрх = 3
+          хэсэг). Доорх цагийн завсраар зөвхөн тухайн хугацаанд баталгаажсан баримтуудыг сугалаанд
+          оруулж болно. Хоосон бол дугуй ажиллахгүй.
         </motion.p>
+
+        <div className="mt-6 rounded-2xl border-4 border-white bg-white/90 p-5 shadow-card backdrop-blur-md">
+          <label className="flex cursor-pointer items-start gap-3">
+            <input
+              type="checkbox"
+              checked={timeFilterEnabled}
+              onChange={(e) => setTimeFilterEnabled(e.target.checked)}
+              className="mt-1 h-5 w-5 shrink-0"
+            />
+            <span>
+              <span className="font-display text-base font-black text-slate-900">
+                Баталгаажсан цагийн завсраар шүүх
+              </span>
+              <span className="mt-1 block text-sm font-semibold text-slate-600">
+                Зөвхөн сонгосон өдөр, цагийн хооронд баталгаажсан баримтууд оролцоно. Цаг нь серверийн
+                тохиргоонд байгаа завсарт (өгөгдмөлөөр UTC+8,{" "}
+                <code className="rounded bg-slate-100 px-1 text-xs">DRAW_APPROVAL_TZ_OFFSET</code>
+                ).
+              </span>
+            </span>
+          </label>
+          {timeFilterEnabled && (
+            <div className="mt-4 grid gap-4 sm:grid-cols-3">
+              <label className="block">
+                <span className="text-xs font-extrabold uppercase text-slate-500">Өдөр</span>
+                <input
+                  type="date"
+                  value={filterDate}
+                  onChange={(e) => setFilterDate(e.target.value)}
+                  className="mt-1 w-full rounded-xl border-2 border-slate-200 bg-white px-3 py-2 font-bold text-slate-900"
+                />
+              </label>
+              <label className="block">
+                <span className="text-xs font-extrabold uppercase text-slate-500">Эхлэх (цаг)</span>
+                <input
+                  type="time"
+                  value={filterFrom}
+                  onChange={(e) => setFilterFrom(e.target.value)}
+                  className="mt-1 w-full rounded-xl border-2 border-slate-200 bg-white px-3 py-2 font-bold text-slate-900"
+                />
+              </label>
+              <label className="block">
+                <span className="text-xs font-extrabold uppercase text-slate-500">Дуусах (цаг)</span>
+                <input
+                  type="time"
+                  value={filterTo}
+                  onChange={(e) => setFilterTo(e.target.value)}
+                  className="mt-1 w-full rounded-xl border-2 border-slate-200 bg-white px-3 py-2 font-bold text-slate-900"
+                />
+              </label>
+            </div>
+          )}
+        </div>
 
         <div className="mt-6 rounded-2xl bg-white/80 p-6 shadow-card backdrop-blur-md">
           <label className="block font-bold text-slate-800">
@@ -167,7 +255,10 @@ export default function AdminDrawPage() {
                       <span>
                         <span className="font-bold text-slate-900">{p.fullName}</span>
                         <span className="block text-xs font-semibold text-slate-600">
-                          {p.phone} · {p.productName}
+                          {p.phone} · {p.productName} · дугуй дээр{" "}
+                          <span className="font-extrabold text-violet-700">
+                            {wheelSliceCount(p)} эрх
+                          </span>
                         </span>
                       </span>
                     </label>
@@ -175,7 +266,9 @@ export default function AdminDrawPage() {
                 ))}
                 {pool.length === 0 && (
                   <li className="p-4 text-center font-bold text-slate-500">
-                    Оролцогч алга. Эхлээд хүсэлтүүдийг батална уу.
+                    {timeFilterEnabled
+                      ? "Энэ цагийн завсарт баталгаажсан, мөн ялагч болоогүй оролцогч алга."
+                      : "Оролцогч алга. Эхлээд хүсэлтүүдийг батална уу."}
                   </li>
                 )}
               </ul>
@@ -186,6 +279,7 @@ export default function AdminDrawPage() {
               pool={pool}
               selectedIds={selected}
               prizeName={prizeName}
+              approvalFilter={approvalFilter}
               onWinnerSaved={onWinnerSaved}
             />
           </div>

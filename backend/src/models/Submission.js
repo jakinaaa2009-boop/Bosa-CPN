@@ -26,6 +26,8 @@ const submissionSchema = new mongoose.Schema(
       enum: ["pending", "approved", "rejected"],
       default: "pending",
     },
+    /** Set when status becomes approved (for сугалааны цагийн завсар шүүлт) */
+    approvedAt: { type: Date, default: null },
   },
   { timestamps: true }
 );

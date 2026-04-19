@@ -2,6 +2,10 @@ import { Router } from "express";
 import { Submission } from "../models/Submission.js";
 import { Winner } from "../models/Winner.js";
 import { requireAdmin } from "../middleware/auth.js";
+import {
+  parseApprovalWindowFromQuery,
+  parseApprovalWindowFromBody,
+} from "../drawApprovalWindow.js";
 
 const router = Router();
 
@@ -15,11 +19,28 @@ function entryWeight(s) {
   return w;
 }
 
-/** Approved submissions whose phone is not already a winner. */
-async function eligibleApprovedSubmissions() {
+/**
+ * Approved submissions whose phone is not already a winner.
+ * @param {{ start: Date, end: Date } | null} timeWindow - if set, only approvals in [start, end]
+ */
+async function eligibleApprovedSubmissions(timeWindow) {
   const winners = await Winner.find({}, "phone");
   const phones = new Set(winners.map((w) => w.phone));
-  const approved = await Submission.find({ status: "approved" }).lean();
+  const base = { status: "approved" };
+  if (timeWindow) {
+    const { start, end } = timeWindow;
+    base.$expr = {
+      $and: [
+        {
+          $gte: [{ $ifNull: ["$approvedAt", "$updatedAt"] }, start],
+        },
+        {
+          $lte: [{ $ifNull: ["$approvedAt", "$updatedAt"] }, end],
+        },
+      ],
+    };
+  }
+  const approved = await Submission.find(base).lean();
   return approved.filter((s) => !phones.has(s.phone));
 }
 
@@ -36,9 +57,13 @@ function weightedPick(submissions) {
   return submissions[submissions.length - 1];
 }
 
-router.get("/pool", requireAdmin, async (_req, res) => {
+router.get("/pool", requireAdmin, async (req, res) => {
   try {
-    const pool = await eligibleApprovedSubmissions();
+    const parsed = parseApprovalWindowFromQuery(req.query);
+    if (!parsed.ok) {
+      return res.status(400).json({ error: parsed.error });
+    }
+    const pool = await eligibleApprovedSubmissions(parsed.window);
     res.json(
       pool.map((s) => ({
         _id: s._id,
@@ -64,12 +89,16 @@ router.get("/pool", requireAdmin, async (_req, res) => {
  */
 router.post("/spin", requireAdmin, async (req, res) => {
   try {
-    const { prizeName, submissionIds } = req.body;
+    const { prizeName, submissionIds, approvalFilter } = req.body;
     if (!prizeName || typeof prizeName !== "string" || !prizeName.trim()) {
       return res.status(400).json({ error: "prizeName is required" });
     }
 
-    let pool = await eligibleApprovedSubmissions();
+    const parsed = parseApprovalWindowFromBody(approvalFilter);
+    if (!parsed.ok) {
+      return res.status(400).json({ error: parsed.error });
+    }
+    let pool = await eligibleApprovedSubmissions(parsed.window);
 
     if (Array.isArray(submissionIds) && submissionIds.length > 0) {
       const idSet = new Set(submissionIds.map(String));

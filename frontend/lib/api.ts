@@ -349,8 +349,26 @@ export async function loginAdmin(username: string, password: string) {
   return data as { token: string; username: string };
 }
 
-export async function fetchDrawPool(): Promise<DrawPoolItem[]> {
-  const res = await fetch(apiUrl("/api/draw/pool"), {
+/** Баталгаажсан цагийн завсар (серверийн DRAW_APPROVAL_TZ_OFFSET, өгөгдмөлөөр +08:00). */
+export type ApprovalTimeFilter = {
+  date: string;
+  from: string;
+  to: string;
+};
+
+export async function fetchDrawPool(
+  approvalFilter?: ApprovalTimeFilter | null
+): Promise<DrawPoolItem[]> {
+  let path = "/api/draw/pool";
+  if (approvalFilter?.date && approvalFilter?.from && approvalFilter?.to) {
+    const q = new URLSearchParams({
+      date: approvalFilter.date,
+      from: approvalFilter.from,
+      to: approvalFilter.to,
+    });
+    path = `${path}?${q.toString()}`;
+  }
+  const res = await fetch(apiUrl(path), {
     headers: adminAuthHeaders(),
   });
   if (!res.ok) throw new Error(await res.text());
@@ -381,7 +399,11 @@ export async function submitReceipt(formData: FormData) {
   return data as { message: string; submission: Submission };
 }
 
-export async function spinDraw(prizeName: string, submissionIds?: string[]) {
+export async function spinDraw(
+  prizeName: string,
+  submissionIds?: string[],
+  approvalFilter?: ApprovalTimeFilter | null
+) {
   const res = await fetch(apiUrl("/api/draw/spin"), {
     method: "POST",
     headers: adminAuthHeaders(),
@@ -389,6 +411,14 @@ export async function spinDraw(prizeName: string, submissionIds?: string[]) {
       prizeName,
       submissionIds:
         submissionIds && submissionIds.length ? submissionIds : undefined,
+      approvalFilter:
+        approvalFilter?.date && approvalFilter?.from && approvalFilter?.to
+          ? {
+              date: approvalFilter.date,
+              from: approvalFilter.from,
+              to: approvalFilter.to,
+            }
+          : undefined,
     }),
   });
   const data = await res.json().catch(() => ({}));

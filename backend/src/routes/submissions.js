@@ -112,7 +112,16 @@ router.patch("/:id", requireAdmin, async (req, res) => {
       if (!["pending", "approved", "rejected"].includes(status)) {
         return res.status(400).json({ error: "Invalid status" });
       }
+      const prev = await Submission.findById(id).select("status").lean();
+      if (!prev) return res.status(404).json({ error: "Not found" });
       updates.status = status;
+      if (status === "approved") {
+        if (prev.status !== "approved") {
+          updates.approvedAt = new Date();
+        }
+      } else {
+        updates.approvedAt = null;
+      }
     }
     if (lotteryEntries !== undefined) {
       const n = Math.floor(Number(lotteryEntries));
@@ -148,9 +157,19 @@ router.patch("/:id/status", requireAdmin, async (req, res) => {
     if (!["pending", "approved", "rejected"].includes(status)) {
       return res.status(400).json({ error: "Invalid status" });
     }
+    const prev = await Submission.findById(req.params.id).select("status").lean();
+    if (!prev) return res.status(404).json({ error: "Not found" });
+    const extra = {};
+    if (status === "approved") {
+      if (prev.status !== "approved") {
+        extra.approvedAt = new Date();
+      }
+    } else {
+      extra.approvedAt = null;
+    }
     const doc = await Submission.findByIdAndUpdate(
       req.params.id,
-      { status },
+      { status, ...extra },
       { new: true }
     );
     if (!doc) return res.status(404).json({ error: "Not found" });

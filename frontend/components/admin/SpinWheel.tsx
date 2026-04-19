@@ -2,32 +2,74 @@
 
 import { useMemo, useState } from "react";
 import { motion, useMotionValue, animate } from "framer-motion";
-import { spinDraw, type DrawPoolItem, type Winner } from "@/lib/api";
+import {
+  spinDraw,
+  type ApprovalTimeFilter,
+  type DrawPoolItem,
+  type Winner,
+} from "@/lib/api";
 
 type Props = {
   pool: DrawPoolItem[];
   selectedIds: Set<string>;
   prizeName: string;
+  /** Same filter as pool fetch; omit or null = all approved times. */
+  approvalFilter?: ApprovalTimeFilter | null;
   onWinnerSaved: (w: Winner) => void;
 };
+
+/** Matches backend `entryWeight` / pool JSON: at least one slice per submission. */
+function segmentCount(p: DrawPoolItem): number {
+  return Math.max(
+    1,
+    Math.floor(Number(p.lotteryEntries)) ||
+      Math.floor(Number(p.productCount)) ||
+      1
+  );
+}
+
+/**
+ * One wheel slice per lottery entry — e.g. 3 entries ⇒ 3 segments for that receipt.
+ */
+function expandPoolForWheel(items: DrawPoolItem[]): { item: DrawPoolItem; key: string }[] {
+  const out: { item: DrawPoolItem; key: string }[] = [];
+  for (const p of items) {
+    const w = segmentCount(p);
+    for (let i = 0; i < w; i++) {
+      out.push({ item: p, key: `${p._id}:${i}` });
+    }
+  }
+  return out;
+}
 
 function shortLabel(name: string, max = 14) {
   if (name.length <= max) return name;
   return `${name.slice(0, max)}…`;
 }
 
-export function SpinWheel({ pool, selectedIds, prizeName, onWinnerSaved }: Props) {
+export function SpinWheel({
+  pool,
+  selectedIds,
+  prizeName,
+  approvalFilter,
+  onWinnerSaved,
+}: Props) {
   const rotation = useMotionValue(0);
   const [spinning, setSpinning] = useState(false);
   const [lastWinner, setLastWinner] = useState<Winner | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const wheelParticipants = useMemo(() => {
+  const filteredPool = useMemo(() => {
     if (selectedIds.size === 0) return pool;
     return pool.filter((p) => selectedIds.has(p._id));
   }, [pool, selectedIds]);
 
-  const n = wheelParticipants.length;
+  const wheelSegments = useMemo(
+    () => expandPoolForWheel(filteredPool),
+    [filteredPool]
+  );
+
+  const n = wheelSegments.length;
   const segment = n > 0 ? 360 / n : 0;
 
   async function handleSpin() {
@@ -45,21 +87,27 @@ export function SpinWheel({ pool, selectedIds, prizeName, onWinnerSaved }: Props
     setLastWinner(null);
 
     const idsArg =
-      selectedIds.size > 0 ? wheelParticipants.map((p) => p._id) : undefined;
+      selectedIds.size > 0
+        ? [...new Set(wheelSegments.map((s) => s.item._id))]
+        : undefined;
 
     let winner: Winner;
     try {
-      winner = await spinDraw(prizeName.trim(), idsArg);
+      winner = await spinDraw(prizeName.trim(), idsArg, approvalFilter ?? null);
     } catch (e) {
       setSpinning(false);
       setError(e instanceof Error ? e.message : "Сугалаа ажиллуулахад алдаа гарлаа");
       return;
     }
 
-    const idx = wheelParticipants.findIndex(
-      (p) => String(p._id) === String(winner.submissionId ?? "")
-    );
-    const targetIndex = idx >= 0 ? idx : 0;
+    const winId = String(winner.submissionId ?? "");
+    const matchingIdx = wheelSegments
+      .map((s, i) => (String(s.item._id) === winId ? i : -1))
+      .filter((i) => i >= 0);
+    const targetIndex =
+      matchingIdx.length > 0
+        ? matchingIdx[Math.floor(Math.random() * matchingIdx.length)]
+        : 0;
 
     const sliceCenterDeg = (targetIndex + 0.5) * segment;
     const goalRotation = -sliceCenterDeg;
@@ -98,7 +146,7 @@ export function SpinWheel({ pool, selectedIds, prizeName, onWinnerSaved }: Props
           className="relative h-full w-full rounded-full border-8 border-amber-300 shadow-glow"
           style={{
             rotate: rotation,
-            background: `conic-gradient(${wheelParticipants
+            background: `conic-gradient(${wheelSegments
               .map((_, i) => {
                 const hues = [330, 280, 200, 140, 45, 15, 260, 320, 180];
                 const h = hues[i % hues.length];
@@ -107,15 +155,16 @@ export function SpinWheel({ pool, selectedIds, prizeName, onWinnerSaved }: Props
               .join(", ")})`,
           }}
         >
-          {wheelParticipants.map((p, i) => {
+          {wheelSegments.map((seg, i) => {
             const ang = (i + 0.5) * segment - 90;
             const rad = (ang * Math.PI) / 180;
             const r = 32;
             const x = 50 + r * Math.cos(rad);
             const y = 50 + r * Math.sin(rad);
+            const p = seg.item;
             return (
               <span
-                key={p._id}
+                key={seg.key}
                 className="pointer-events-none absolute text-[10px] font-black uppercase leading-tight text-white drop-shadow-md sm:text-xs"
                 style={{
                   left: `${x}%`,
