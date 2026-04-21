@@ -41,7 +41,7 @@ export const PROMO_PRODUCTS = [
     name: "Nips",
     category: "Шоколад (White)",
     variants: "White / Milk / Peanut / Raisin",
-    desc: "Бүрсэн шоколадтай драже",
+    desc: "Бүрсэн шоколадтай үрэл",
     featured: false,
   },
   {
@@ -52,7 +52,7 @@ export const PROMO_PRODUCTS = [
     name: "Nips",
     category: "Шоколад (Milk)",
     variants: "White / Milk / Peanut / Raisin",
-    desc: "Бүрсэн шоколадтай драже",
+    desc: "Бүрсэн шоколадтай үрэл",
     featured: true,
   },
   {
@@ -63,7 +63,7 @@ export const PROMO_PRODUCTS = [
     name: "Nips",
     category: "Шоколад (Peanut)",
     variants: "White / Milk / Peanut / Raisin",
-    desc: "Бүрсэн шоколадтай драже",
+    desc: "Бүрсэн шоколадтай үрэл",
     featured: false,
   },
   {
@@ -74,7 +74,7 @@ export const PROMO_PRODUCTS = [
     name: "Nips",
     category: "Шоколад (Raisin)",
     variants: "White / Milk / Peanut / Raisin",
-    desc: "Бүрсэн шоколадтай драже",
+    desc: "Бүрсэн шоколадтай үрэл",
     featured: false,
   },
   {
@@ -117,7 +117,8 @@ export const HOW_STEPS = [
   {
     title: "Админ шалгаж тохирох эрхийг өгнө",
     emoji: "🎁",
-    description: "Оролцох бүртээ аз жаргал, бэлэг дүүрэн боломж таныг хүлээж байна!",
+    description:
+      "Нэг баримтанд хэдэн ч бүтээгдэхүүн байж болох ба бүтээгдэхүүн бүрийн тоогоор эрх авна.",
     gradient: "from-violet-400 via-purple-400 to-fuchsia-400",
   },
   {

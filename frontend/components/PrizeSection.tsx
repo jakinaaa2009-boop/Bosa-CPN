@@ -1,308 +1,303 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { CAMPAIGN_FINE_PRINT } from "@/lib/constants";
-import { staggerContainer, staggerItem, viewportOnce } from "@/lib/motion";
-import { HeroPrizeShowcase } from "./hero/HeroPrizeShowcase";
+import Image from "next/image";
+import { motion, useReducedMotion } from "framer-motion";
+import { CAMPAIGN_FINE_PRINT, PROMO_PRODUCTS } from "@/lib/constants";
+import { viewportOnce } from "@/lib/motion";
 
 type Prize = {
   title: string;
-  desc: string;
+  priceLine: string;
   price: string;
   winners: string;
-  icon: string;
-  accent: {
-    leftBorder: string;
-    iconBg: string;
-    pricePill: string;
-    winnersPill: string;
-    glow: string;
-  };
+  image?: string;
+  icon?: string;
+  glow: string;
 };
 
 const PRIZES: Prize[] = [
   {
     title: "PlayStation 5",
-    desc: "Хамгийн сүүлийн үеийн тоглоомын консол",
+    priceLine: "PlayStation – 2,500,000₮ (1 азтан)",
     price: "2,500,000₮",
     winners: "1 азтан",
-    icon: "🎮",
-    accent: {
-      leftBorder: "border-rose-400",
-      iconBg: "from-rose-200 to-orange-100",
-      pricePill: "from-rose-500 to-orange-400",
-      winnersPill: "from-rose-100 to-orange-50 text-rose-900 ring-rose-200/80",
-      glow: "hover:shadow-[0_22px_70px_rgba(244,63,94,0.20)]",
-    },
+    image: "/prizes/playstation5.png",
+    glow: "from-fuchsia-400/35 via-amber-300/25 to-cyan-300/30",
   },
   {
-    title: "Gremix тоглоомын дэлгүүрийн эрх",
-    desc: "Дээд зэрэглэлийн геймерийн туршлага",
+    title: "Gremix эрх",
+    priceLine: "Gremix эрх – 250,000₮ (1 азтан)",
     price: "250,000₮",
     winners: "1 азтан",
-    icon: "🕹️",
-    accent: {
-      leftBorder: "border-sky-400",
-      iconBg: "from-sky-200 to-cyan-100",
-      pricePill: "from-sky-500 to-cyan-400",
-      winnersPill: "from-sky-100 to-cyan-50 text-sky-900 ring-sky-200/80",
-      glow: "hover:shadow-[0_22px_70px_rgba(56,189,248,0.20)]",
-    },
+    image: "/prizes/prize2.png",
+    glow: "from-sky-400/30 via-indigo-400/20 to-fuchsia-400/25",
   },
   {
-    title: "Нэрийн барааны багц бэлэг",
-    desc: "Чанартай, стильтэй сонголт",
+    title: "Нэрийн барааны багц",
+    priceLine: "Нэрийн барааны багц – 500,000₮ (5 азтан)",
     price: "500,000₮",
     winners: "5 азтан",
-    icon: "🎁",
-    accent: {
-      leftBorder: "border-violet-400",
-      iconBg: "from-violet-200 to-fuchsia-100",
-      pricePill: "from-violet-500 to-fuchsia-400",
-      winnersPill:
-        "from-violet-100 to-fuchsia-50 text-violet-950 ring-violet-200/80",
-      glow: "hover:shadow-[0_22px_70px_rgba(168,85,247,0.18)]",
-    },
+    image: "/prizes/prize3.png",
+    glow: "from-violet-400/30 via-fuchsia-400/20 to-amber-300/20",
   },
   {
-    title: "STEAM платформын эрх",
-    desc: "Таны дуртай тоглоомуудыг нээх эрх",
+    title: "STEAM эрх",
+    priceLine: "STEAM эрх – $150 (10 азтан)",
     price: "$150",
     winners: "10 азтан",
-    icon: "💳",
-    accent: {
-      leftBorder: "border-orange-400",
-      iconBg: "from-amber-200 to-orange-100",
-      pricePill: "from-amber-500 to-orange-400",
-      winnersPill:
-        "from-amber-100 to-orange-50 text-amber-950 ring-amber-200/80",
-      glow: "hover:shadow-[0_22px_70px_rgba(249,115,22,0.18)]",
-    },
+    image: "/prizes/prize4.jpg",
+    glow: "from-amber-400/28 via-rose-400/16 to-sky-400/18",
   },
   {
     title: "Honor Choice брэндийн чихэвч",
-    desc: "Хөгжимтэй хамт хаана ч, хэзээ ч",
+    priceLine: "Honor Choice чихэвч – 400,000₮ (2 азтан)",
     price: "400,000₮",
     winners: "2 азтан",
-    icon: "🎧",
-    accent: {
-      leftBorder: "border-emerald-400",
-      iconBg: "from-emerald-200 to-lime-100",
-      pricePill: "from-emerald-500 to-lime-400",
-      winnersPill:
-        "from-emerald-100 to-lime-50 text-emerald-950 ring-emerald-200/80",
-      glow: "hover:shadow-[0_22px_70px_rgba(16,185,129,0.18)]",
-    },
+    image: "/prizes/prize5.png",
+    glow: "from-emerald-400/25 via-cyan-400/18 to-violet-400/22",
   },
 ] as const;
 
-function Sparkle({ className }: { className: string }) {
-  return (
-    <span
-      aria-hidden
-      className={[
-        "pointer-events-none absolute grid place-items-center rounded-full",
-        "bg-white/70 shadow-[0_10px_30px_rgba(16,24,40,0.10)] ring-1 ring-white/60",
-        className,
-      ].join(" ")}
-    >
-      <span className="h-1.5 w-1.5 rotate-45 rounded-sm bg-gradient-to-br from-fuchsia-500/80 to-amber-400/80" />
-    </span>
-  );
-}
-
-function PrizeCard({ prize }: { prize: Prize }) {
-  return (
-    <motion.li
-      variants={staggerItem}
-      whileHover={{ y: -5 }}
-      transition={{ type: "spring", stiffness: 260, damping: 22 }}
-      className={[
-        "group relative flex flex-col gap-3 rounded-3xl border border-white/70 bg-white/70 p-3 shadow-[0_12px_34px_rgba(15,23,42,0.10)] backdrop-blur",
-        "md:flex-row md:items-center",
-        "transition-shadow duration-300",
-        prize.accent.glow,
-      ].join(" ")}
-    >
-      <div
-        aria-hidden
-        className={[
-          "absolute left-0 top-5 h-[calc(100%-40px)] w-1.5 rounded-full border-l-4",
-          prize.accent.leftBorder,
-        ].join(" ")}
-      />
-
-      <div className="flex items-start gap-3 md:items-center">
-        <div
-          className={[
-            "grid h-10 w-10 shrink-0 place-items-center rounded-2xl bg-gradient-to-br ring-1 ring-white/70 shadow-[0_8px_22px_rgba(15,23,42,0.10)]",
-            prize.accent.iconBg,
-          ].join(" ")}
-        >
-          <span className="text-xl" role="img" aria-hidden>
-            {prize.icon}
-          </span>
-        </div>
-      </div>
-
-      <div className="min-w-0 flex-1 md:pl-2">
-        <p className="text-sm font-black text-slate-950 md:text-base">
-          {prize.title}
-        </p>
-        <p className="mt-0.5 text-xs font-semibold text-slate-600 md:text-sm">
-          {prize.desc}
-        </p>
-      </div>
-
-      <div className="flex flex-wrap items-center gap-2 md:flex-nowrap md:justify-end">
-        <span
-          className={[
-            "inline-flex items-center justify-center rounded-full bg-gradient-to-r px-3 py-1 text-xs font-black text-white shadow-[0_10px_22px_rgba(15,23,42,0.10)]",
-            prize.accent.pricePill,
-          ].join(" ")}
-        >
-          {prize.price}
-        </span>
-        <span
-          className={[
-            "inline-flex items-center justify-center gap-1.5 rounded-full bg-gradient-to-r px-3 py-1 text-xs font-extrabold ring-2",
-            prize.accent.winnersPill,
-          ].join(" ")}
-        >
-          <span aria-hidden>🎁</span>
-          {prize.winners}
-        </span>
-      </div>
-
-      <div
-        aria-hidden
-        className="pointer-events-none absolute -right-10 -top-10 h-24 w-24 rounded-full bg-white/65 blur-[1px]"
-      />
-    </motion.li>
-  );
+function floatKeyframes(reduce: boolean, y = 14) {
+  if (reduce) return {};
+  return {
+    animate: { y: [0, -y, 0] },
+    transition: { duration: 5.2, repeat: Infinity, ease: "easeInOut" as const },
+  };
 }
 
 export function PrizeSection() {
+  const reduce = useReducedMotion();
+  const float = floatKeyframes(reduce, 12);
+  const snacks = [PROMO_PRODUCTS[0], PROMO_PRODUCTS[4], PROMO_PRODUCTS[8]].filter(
+    Boolean
+  );
+
   return (
     <section
       id="prizes"
-      className="relative overflow-hidden bg-gradient-to-br from-rose-200/70 via-violet-100/70 to-amber-100/70 px-4 py-16 md:py-24"
+      className="relative isolate overflow-hidden bg-gradient-to-b from-[#14031f] via-[#0b1636] to-[#0a0b18] px-4 py-16 md:py-24"
     >
+      {/* Nebula + star field */}
       <div aria-hidden className="pointer-events-none absolute inset-0">
-        <div className="absolute inset-0 bg-[radial-gradient(1100px_520px_at_50%_0%,rgba(236,72,153,0.16),transparent_60%),radial-gradient(1000px_520px_at_0%_40%,rgba(168,85,247,0.16),transparent_62%),radial-gradient(900px_520px_at_100%_45%,rgba(251,191,36,0.14),transparent_60%)]" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_1px_1px,rgba(15,23,42,0.08)_1px,transparent_0)] [background-size:18px_18px] opacity-30" />
-        <div className="absolute -left-24 top-16 h-64 w-64 rounded-full bg-gradient-to-br from-rose-200/70 to-amber-100/50 blur-2xl" />
-        <div className="absolute -right-24 top-24 h-72 w-72 rounded-full bg-gradient-to-br from-violet-200/70 to-sky-100/50 blur-2xl" />
-
-        <Sparkle className="left-[10%] top-[18%] h-8 w-8" />
-        <Sparkle className="left-[24%] top-[10%] h-6 w-6" />
-        <Sparkle className="right-[16%] top-[14%] h-9 w-9" />
-        <Sparkle className="right-[10%] top-[30%] h-7 w-7" />
-        <Sparkle className="left-[16%] bottom-[18%] h-7 w-7" />
-        <Sparkle className="right-[14%] bottom-[14%] h-8 w-8" />
+        <div className="absolute inset-0 bg-[radial-gradient(900px_520px_at_20%_10%,rgba(168,85,247,0.38),transparent_62%),radial-gradient(820px_520px_at_85%_18%,rgba(236,72,153,0.30),transparent_65%),radial-gradient(980px_620px_at_50%_105%,rgba(59,130,246,0.32),transparent_62%)]" />
+        <div className="absolute inset-0 opacity-60 [background-image:radial-gradient(circle_at_1px_1px,rgba(255,255,255,0.45)_1px,transparent_0)] [background-size:20px_20px]" />
+        <motion.div
+          className="absolute -left-32 top-10 h-80 w-80 rounded-full bg-gradient-to-br from-fuchsia-500/25 via-violet-500/15 to-transparent blur-3xl"
+          {...(reduce ? {} : { animate: { y: [0, -18, 0] }, transition: { duration: 10, repeat: Infinity, ease: "easeInOut" } })}
+        />
+        <motion.div
+          className="absolute -right-40 top-24 h-96 w-96 rounded-full bg-gradient-to-br from-sky-400/18 via-indigo-500/12 to-transparent blur-3xl"
+          {...(reduce ? {} : { animate: { y: [0, 16, 0] }, transition: { duration: 11, repeat: Infinity, ease: "easeInOut" } })}
+        />
+        <div className="absolute inset-0 bg-[radial-gradient(800px_420px_at_50%_0%,rgba(250,204,21,0.12),transparent_60%)]" />
+        <div className="absolute inset-0 opacity-25 [background-image:linear-gradient(to_right,rgba(255,255,255,0.10),transparent_30%,transparent_70%,rgba(255,255,255,0.08))] rotate-[-10deg]" />
       </div>
 
-      <div className="relative mx-auto max-w-5xl">
-        <div className="grid gap-8 lg:grid-cols-[0.95fr_1.05fr] lg:items-start lg:gap-10">
-          <div className="lg:sticky lg:top-24">
+      {/* Floating snack products around edges */}
+      <div aria-hidden className="pointer-events-none absolute inset-0">
+        {snacks.map((p, i) => {
+          const pos =
+            i === 0
+              ? { left: "6%", top: "22%", r: -10, s: "h-20 w-20 md:h-28 md:w-28" }
+              : i === 1
+                ? { left: "10%", bottom: "14%", r: 8, s: "h-24 w-24 md:h-32 md:w-32" }
+                : { right: "7%", top: "18%", r: 10, s: "h-24 w-24 md:h-32 md:w-32" };
+          return (
             <motion.div
-              initial={{ opacity: 0, scale: 0.96 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={viewportOnce}
-              transition={{ type: "spring", stiffness: 200, damping: 22 }}
-              className="mx-auto w-full max-w-[520px]"
+              key={p.id}
+              className={`absolute ${pos.s} drop-shadow-[0_18px_55px_rgba(0,0,0,0.45)] hidden sm:block`}
+              style={pos as never}
+              {...(reduce
+                ? {}
+                : {
+                    animate: { y: [0, -12 - i * 2, 0], rotate: [pos.r, pos.r + 4, pos.r] },
+                    transition: { duration: 6.2 + i * 0.6, repeat: Infinity, ease: "easeInOut", delay: i * 0.35 },
+                  })}
             >
-              <HeroPrizeShowcase />
+              <div className={`relative h-full w-full rounded-3xl bg-gradient-to-br ${p.accent} p-[2px]`}>
+                <div className="relative h-full w-full overflow-hidden rounded-[1.25rem] bg-white/90">
+                  <Image src={p.image} alt="" fill className="object-contain" sizes="160px" />
+                </div>
+              </div>
             </motion.div>
+          );
+        })}
+      </div>
 
-            <div className="mt-4 text-center lg:mt-6 lg:text-left">
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={viewportOnce}
-                transition={{ duration: 0.4 }}
-                className="inline-flex w-fit items-center gap-2 rounded-full border border-white/70 bg-white/75 px-4 py-1.5 text-xs font-extrabold tracking-wide text-slate-800 shadow-[0_10px_30px_rgba(16,24,40,0.08)] backdrop-blur"
-              >
-                🎁 ШАГНАЛУУД
-              </motion.div>
-
-              <motion.p
-                initial={{ opacity: 0, y: 10 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={viewportOnce}
-                transition={{ delay: 0.08, duration: 0.45 }}
-                className="mx-auto mt-3 max-w-md text-base font-semibold text-slate-600 md:text-lg lg:mx-0"
-              >
-                Өдөр бүрийн баяр хөөр — супер шагнал хүртэл нэг алхам.
-              </motion.p>
-            </div>
-          </div>
-
-          <motion.div
-          initial={{ opacity: 0, y: 18 }}
+      <div className="relative mx-auto max-w-6xl">
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={viewportOnce}
           transition={{ type: "spring", stiffness: 220, damping: 24 }}
-            className="rounded-[2rem] border border-white/70 bg-white/70 p-5 shadow-[0_16px_46px_rgba(15,23,42,0.14)] backdrop-blur md:p-7 lg:max-h-[720px] lg:overflow-hidden"
+          className="mx-auto max-w-3xl text-center"
         >
-          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-            <div className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-fuchsia-500 via-violet-500 to-amber-400 px-4 py-2 text-xs font-black tracking-wide text-white shadow-[0_14px_34px_rgba(168,85,247,0.22)] ring-2 ring-white/80">
-              🏆 Шагналуудын жагсаалт
-            </div>
-            <motion.button
-              type="button"
-              whileHover={{ y: -1 }}
-              whileTap={{ scale: 0.98 }}
-              className="inline-flex items-center justify-center gap-2 rounded-full border border-white/70 bg-white/70 px-5 py-2 text-sm font-extrabold text-slate-900 shadow-[0_14px_34px_rgba(15,23,42,0.10)] ring-1 ring-white/70 backdrop-blur transition hover:bg-white/85"
-            >
-              ✨ Азтангууд бэлэн үү?
-            </motion.button>
+          <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-4 py-2 text-xs font-extrabold tracking-[0.18em] text-white/80 backdrop-blur">
+            ✦ GRAND PRIZE REVEAL ✦
+          </div>
+          <h2 className="mt-5 font-display text-4xl font-black tracking-tight text-white md:text-6xl">
+            <span className="bg-gradient-to-r from-white via-fuchsia-100 to-cyan-100 bg-clip-text text-transparent drop-shadow-[0_0_18px_rgba(236,72,153,0.35)]">
+              Шагналын сан
+            </span>
+          </h2>
+          <p className="mx-auto mt-4 max-w-2xl text-sm font-semibold leading-relaxed text-white/75 md:text-base">
+            Кино мэт гялалзсан мөч — супер шагнал хүртэл нэг алхам.
+          </p>
+        </motion.div>
+
+        {/* Center stage */}
+        <motion.div
+          initial={{ opacity: 0, y: 18 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={viewportOnce}
+          transition={{ delay: 0.06, type: "spring", stiffness: 200, damping: 22 }}
+          className="relative mx-auto mt-12"
+        >
+          {/* Gold/purple light streaks */}
+          <div aria-hidden className="pointer-events-none absolute left-1/2 top-10 h-40 w-[min(920px,92%)] -translate-x-1/2">
+            <div className="absolute inset-0 bg-[conic-gradient(from_180deg_at_50%_50%,rgba(250,204,21,0.0),rgba(250,204,21,0.22),rgba(236,72,153,0.18),rgba(59,130,246,0.14),rgba(250,204,21,0.0))] blur-2xl opacity-80" />
           </div>
 
-          <motion.ul
-            variants={staggerContainer}
-            initial="hidden"
-            whileInView="show"
-            viewport={viewportOnce}
-              className="mt-5 grid gap-3 lg:max-h-[430px] lg:overflow-y-auto lg:pr-1"
+          {/* Crystal / glass platform */}
+          <motion.div
+            className="relative mx-auto w-full max-w-6xl overflow-hidden rounded-[2.75rem] border border-white/15 bg-white/5 p-5 shadow-[0_32px_120px_rgba(0,0,0,0.55)] backdrop-blur-xl md:p-7"
+            {...(reduce
+              ? {}
+              : {
+                  animate: { boxShadow: ["0 32px 120px rgba(0,0,0,0.55)", "0 36px 140px rgba(168,85,247,0.40)"] },
+                  transition: { duration: 3.6, repeat: Infinity, repeatType: "mirror", ease: "easeInOut" },
+                })}
           >
-            {PRIZES.map((p) => (
-              <PrizeCard key={p.title} prize={p} />
-            ))}
-          </motion.ul>
-
+            <div
+              aria-hidden
+              className="absolute inset-0 bg-[radial-gradient(900px_420px_at_50%_0%,rgba(255,255,255,0.10),transparent_55%),radial-gradient(700px_420px_at_15%_80%,rgba(236,72,153,0.18),transparent_60%),radial-gradient(700px_420px_at_90%_80%,rgba(59,130,246,0.18),transparent_60%)]"
+            />
+            {/* Soft golden swirl */}
             <motion.div
-              initial={{ opacity: 0, y: 12 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={viewportOnce}
-              transition={{ delay: 0.08, type: "spring", stiffness: 210, damping: 22 }}
-              className="mt-6 overflow-hidden rounded-[1.75rem] border border-white/70 bg-white/75 shadow-[0_18px_55px_rgba(15,23,42,0.12)] backdrop-blur"
-            >
-              <details className="group">
-                <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-5 py-4">
-                  <span className="inline-flex items-center gap-2 rounded-full bg-white/85 px-3 py-1.5 text-xs font-black text-slate-800 ring-2 ring-amber-200">
-                    📝 Санамж
-                  </span>
-                  <span className="text-xs font-extrabold text-slate-600 group-open:rotate-180 transition">
-                    ▼
-                  </span>
-                </summary>
-                <div className="border-t border-white/70 px-5 pb-5">
-                  <ul className="space-y-2 text-xs font-semibold leading-relaxed text-slate-700 md:text-sm">
+              aria-hidden
+              className="pointer-events-none absolute left-1/2 top-1/2 h-[420px] w-[420px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[conic-gradient(from_90deg,rgba(250,204,21,0.0),rgba(250,204,21,0.20),rgba(250,204,21,0.0),rgba(236,72,153,0.12),rgba(59,130,246,0.12),rgba(250,204,21,0.0))] blur-2xl"
+              {...(reduce ? {} : { animate: { rotate: 360 }, transition: { duration: 16, repeat: Infinity, ease: "linear" } })}
+            />
+
+            <div className="relative">
+              {/* Prize row */}
+              <div className="grid gap-4 md:grid-cols-5">
+                {PRIZES.map((p, i) => (
+                  <motion.div
+                    key={p.title}
+                    className="relative"
+                    initial={{ opacity: 0, y: 14 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={viewportOnce}
+                    transition={{ delay: 0.06 + i * 0.05, type: "spring", stiffness: 220, damping: 22 }}
+                  >
+                    {/* glow halo */}
+                    <div
+                      aria-hidden
+                      className={`absolute -inset-6 rounded-[2rem] bg-gradient-to-br ${p.glow} blur-2xl opacity-70`}
+                    />
+
+                    <motion.div
+                      className="relative mx-auto grid aspect-square w-full max-w-[220px] place-items-center rounded-[2rem] border border-white/18 bg-white/6 shadow-[0_22px_80px_rgba(0,0,0,0.45)] backdrop-blur-md"
+                      {...(reduce
+                        ? {}
+                        : {
+                            animate: { y: [0, -10, 0] },
+                            transition: { duration: 4.8 + (i % 3) * 0.35, repeat: Infinity, ease: "easeInOut", delay: i * 0.2 },
+                          })}
+                    >
+                      <div className="absolute inset-0 rounded-[2rem] bg-[radial-gradient(120px_120px_at_35%_25%,rgba(255,255,255,0.22),transparent_55%)]" />
+                      <div className="absolute inset-x-6 top-6 h-10 rounded-full bg-white/10 blur-md" />
+
+                      <div className="relative h-[58%] w-[58%] overflow-hidden rounded-2xl bg-gradient-to-br from-white/70 via-white/30 to-white/10 p-[2px] ring-1 ring-white/15">
+                        <div className="relative h-full w-full overflow-hidden rounded-[0.95rem] bg-white/90">
+                          {p.image ? (
+                            <Image
+                              src={p.image}
+                              alt={p.title}
+                              fill
+                              className="object-contain drop-shadow-[0_18px_45px_rgba(0,0,0,0.35)]"
+                              sizes="220px"
+                              priority={i === 0}
+                            />
+                          ) : (
+                            <div className="grid h-full w-full place-items-center bg-gradient-to-br from-slate-50 to-white">
+                              <span className="text-4xl" aria-hidden>
+                                {p.icon ?? "🎁"}
+                              </span>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </motion.div>
+
+                    {/* Label card */}
+                    <div className="mt-3 rounded-2xl border border-white/18 bg-white/10 px-3 py-3 text-center shadow-[0_18px_55px_rgba(0,0,0,0.35)] backdrop-blur">
+                      <p className="text-xs font-black text-white md:text-[13px]">{p.title}</p>
+                      <p className="mt-1 text-[11px] font-semibold text-white/80">{p.price}</p>
+                      <p className="mt-1 text-[11px] font-extrabold text-amber-200/95">
+                        {p.winners}
+                      </p>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+
+              {/* Mobile stacked (keep readability) */}
+              <div className="mt-5 grid gap-3 md:hidden">
+                {PRIZES.map((p) => (
+                  <div
+                    key={`${p.title}-line`}
+                    className="rounded-2xl border border-white/15 bg-white/5 px-4 py-3 text-sm font-semibold text-white/85 backdrop-blur"
+                  >
+                    {p.priceLine}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Bottom info box */}
+          <motion.div
+            initial={{ opacity: 0, y: 14 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={viewportOnce}
+            transition={{ delay: 0.12, type: "spring", stiffness: 220, damping: 24 }}
+            className="mx-auto mt-8 max-w-5xl"
+          >
+            <div className="relative overflow-hidden rounded-[1.85rem] border border-amber-200/30 bg-gradient-to-br from-amber-200/18 via-amber-100/10 to-fuchsia-200/10 p-5 shadow-[0_26px_90px_rgba(0,0,0,0.50)] backdrop-blur md:p-6">
+              <div aria-hidden className="absolute inset-0 bg-[radial-gradient(700px_260px_at_30%_0%,rgba(250,204,21,0.18),transparent_65%),radial-gradient(700px_260px_at_85%_115%,rgba(236,72,153,0.14),transparent_65%)]" />
+              <div className="relative flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+                <div className="min-w-0">
+                  <div className="inline-flex items-center gap-2 rounded-full bg-amber-200/20 px-3 py-1.5 text-xs font-black text-amber-100 ring-1 ring-amber-200/30">
+                    ✦ Campaign info
+                  </div>
+                  <ul className="mt-3 space-y-2 text-sm font-semibold leading-relaxed text-white/85">
                     {CAMPAIGN_FINE_PRINT.map((t) => (
                       <li key={t} className="flex gap-2">
-                        <span className="mt-0.5 text-emerald-600" aria-hidden>
-                          ✔
+                        <span className="mt-0.5 text-amber-200" aria-hidden>
+                          ✦
                         </span>
                         <span className="min-w-0">{t}</span>
                       </li>
                     ))}
                   </ul>
                 </div>
-              </details>
-            </motion.div>
+                <div className="shrink-0 rounded-3xl border border-white/15 bg-white/6 p-4 text-center backdrop-blur">
+                  <div className="mx-auto grid h-14 w-14 place-items-center rounded-3xl bg-gradient-to-br from-amber-200/35 to-fuchsia-200/15 ring-1 ring-white/15 shadow-[0_18px_55px_rgba(0,0,0,0.35)]">
+                    <span className="text-2xl" aria-hidden>
+                      🏆
+                    </span>
+                  </div>
+                  <p className="mt-3 text-xs font-extrabold text-white/85">
+                    Бэлэг дүүрэн супер аз!
+                  </p>
+                </div>
+              </div>
+            </div>
+          </motion.div>
         </motion.div>
-        </div>
       </div>
     </section>
   );
