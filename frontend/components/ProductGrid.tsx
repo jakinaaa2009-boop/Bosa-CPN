@@ -22,7 +22,7 @@ function Sparkle({ className }: { className: string }) {
   );
 }
 
-function ProductCard({ p, index }: { p: Product; index: number }) {
+function ProductCard({ p }: { p: Product }) {
   const showFeatured = Boolean((p as { featured?: boolean }).featured);
   const name = (p as { name?: string }).name ?? "Бүтээгдэхүүн";
   const category = (p as { category?: string }).category ?? "";
@@ -61,16 +61,6 @@ function ProductCard({ p, index }: { p: Product; index: number }) {
           />
 
           <div className="relative">
-            <div className="flex items-center justify-between gap-3">
-              <span
-                className={[
-                  "hidden h-2.5 w-2.5 rounded-full bg-gradient-to-r md:inline-block",
-                  p.accent,
-                ].join(" ")}
-                aria-hidden
-              />
-            </div>
-
             <motion.div
               whileHover={{ scale: 1.03 }}
               transition={{ duration: 0.35 }}
@@ -189,8 +179,8 @@ export function ProductGrid() {
           viewport={viewportOnce}
           className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3"
         >
-          {PROMO_PRODUCTS.map((p, i) => (
-            <ProductCard key={p.id} p={p} index={i} />
+          {PROMO_PRODUCTS.map((p) => (
+            <ProductCard key={p.id} p={p} />
           ))}
         </motion.div>
 

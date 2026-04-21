@@ -120,6 +120,23 @@ export function HeroSection() {
                 </Link>
               </motion.div>
             </motion.div>
+
+            {/* Mobile/Tablet — show banner as full-width image */}
+            <div
+              className="relative mt-8 overflow-hidden rounded-[1.75rem] border border-white/60 bg-white/25 shadow-[0_18px_60px_rgba(15,23,42,0.10)] backdrop-blur-sm lg:hidden"
+              aria-hidden
+            >
+              <div className="relative aspect-[16/10] w-full">
+                <Image
+                  src="/banner.jpg"
+                  alt=""
+                  fill
+                  priority
+                  className="object-contain object-center"
+                  sizes="100vw"
+                />
+              </div>
+            </div>
           </div>
 
           {/* Right — banner (fully visible, no overlays/fade) */}
