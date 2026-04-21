@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { motion, useReducedMotion } from "framer-motion";
 import { SUBMIT_PAGE_HREF } from "@/lib/constants";
 import { HeroCloudRainbow } from "./hero/HeroCloudRainbow";
@@ -15,6 +16,29 @@ export function HeroSection() {
       id="home"
       className="relative isolate overflow-hidden border-b border-white/40 bg-gradient-to-b from-[#fef6ff] via-[#e8f4ff] to-[#fff5eb]"
     >
+      {/* Campaign banner image (public/banner.jpg) — subtle accent, not a full takeover */}
+      <div
+        className="pointer-events-none absolute inset-y-0 right-0 z-[1] hidden w-[58%] min-w-[520px] md:block"
+        aria-hidden
+      >
+        <div className="absolute inset-0">
+          <Image
+            src="/banner.jpg"
+            alt=""
+            fill
+            priority
+            className="object-cover object-center opacity-35 saturate-75 contrast-90 blur-[0.6px]"
+            sizes="(min-width: 768px) 58vw, 0px"
+          />
+          {/* Fade to the left so copy stays clean */}
+          <div className="absolute inset-0 bg-gradient-to-l from-white/5 via-white/50 to-white/95" />
+          {/* Soft top fade under navbar */}
+          <div className="absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-white/80 to-transparent" />
+          {/* Subtle vignette for depth */}
+          <div className="absolute inset-0 shadow-[inset_60px_0_90px_rgba(255,255,255,0.92)]" />
+        </div>
+      </div>
+
       {/* Sky layers */}
       <div
         className="pointer-events-none absolute inset-0 z-0 bg-[radial-gradient(ellipse_120%_80%_at_50%_-10%,rgba(255,182,255,0.45),transparent_55%)]"

@@ -11,7 +11,7 @@ export function HeroCloudRainbow() {
 
   return (
     <div
-      className="pointer-events-none absolute inset-0 z-[1] overflow-hidden"
+      className="pointer-events-none absolute inset-0 z-[2] overflow-hidden"
       aria-hidden
     >
       {/* Soft rainbow arc — SVG for smooth gradient stroke */}
