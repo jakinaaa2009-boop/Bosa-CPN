@@ -13,6 +13,7 @@ export default function AdminStatsPage() {
   const [stats, setStats] = useState<AdminStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState<string | null>(null);
+  const [exporting, setExporting] = useState(false);
 
   const load = useCallback(async () => {
     if (!getAdminToken()) {
@@ -40,6 +41,44 @@ export default function AdminStatsPage() {
     router.push("/admin");
   }
 
+  async function downloadExcel() {
+    if (!stats || exporting) return;
+    setExporting(true);
+    try {
+      const XLSX = await import("xlsx");
+      const wb = XLSX.utils.book_new();
+
+      const summaryRows = [
+        { metric: "Total users", value: stats.totalUsers },
+        { metric: "Total companies", value: stats.totalCompanies },
+        { metric: "Total individuals", value: stats.totalIndividuals },
+        { metric: "Generated at", value: new Date().toISOString() },
+      ];
+      const wsSummary = XLSX.utils.json_to_sheet(summaryRows);
+      XLSX.utils.book_append_sheet(wb, wsSummary, "Summary");
+
+      const wsRegs = XLSX.utils.json_to_sheet(stats.registrationsByDay, {
+        header: ["date", "count"],
+      });
+      XLSX.utils.book_append_sheet(wb, wsRegs, "RegistrationsByDay");
+
+      const wsAge = XLSX.utils.json_to_sheet(stats.ageDistribution, {
+        header: ["label", "count"],
+      });
+      XLSX.utils.book_append_sheet(wb, wsAge, "AgeDistribution");
+
+      const pad2 = (n: number) => String(n).padStart(2, "0");
+      const d = new Date();
+      const fileName = `stats-${d.getFullYear()}${pad2(d.getMonth() + 1)}${pad2(d.getDate())}-${pad2(d.getHours())}${pad2(d.getMinutes())}.xlsx`;
+      XLSX.writeFile(wb, fileName);
+    } catch (e) {
+      console.error(e);
+      setErr("Excel файл үүсгэж чадсангүй. Дахин оролдоно уу.");
+    } finally {
+      setExporting(false);
+    }
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-100 via-violet-50 to-amber-50">
       <header className="sticky top-0 z-10 border-b-2 border-white/80 bg-white/90 px-4 py-4 backdrop-blur-md">
@@ -51,6 +90,15 @@ export default function AdminStatsPage() {
             </h1>
           </div>
           <div className="flex flex-wrap gap-2">
+            <button
+              type="button"
+              onClick={downloadExcel}
+              disabled={!stats || loading || exporting}
+              className="rounded-xl border-2 border-emerald-300 bg-emerald-50 px-4 py-2 text-sm font-extrabold text-emerald-900 disabled:cursor-not-allowed disabled:opacity-60"
+              title="Excel татах"
+            >
+              {exporting ? "Excel бэлдэж байна..." : "Excel татах"}
+            </button>
             <Link
               href="/admin/dashboard"
               className="rounded-xl border-2 border-slate-300 px-4 py-2 text-sm font-bold text-slate-800"
