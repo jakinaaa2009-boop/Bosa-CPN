@@ -106,9 +106,7 @@ export default function AdminDrawPage() {
         <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-3">
           <div className="flex min-w-0 max-w-full flex-1 items-center gap-3 md:gap-4">
             <AdminBrandLogo />
-            <h1 className="min-w-0 font-display text-xl font-black text-slate-900 md:text-2xl">
-              Азын дугуй
-            </h1>
+            <span className="sr-only">Админ — Сугалаа</span>
           </div>
           <div className="flex flex-wrap gap-2">
             <Link

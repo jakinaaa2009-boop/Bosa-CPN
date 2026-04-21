@@ -199,7 +199,7 @@ export function SpinWheel({
         whileTap={{ scale: spinning ? 1 : 0.97 }}
         className="rounded-2xl bg-gradient-to-r from-amber-400 to-orange-500 px-10 py-4 text-lg font-extrabold text-slate-900 shadow-lg disabled:opacity-50"
       >
-        {spinning ? "Эргэж байна..." : "🎡 Сугалаа татах"}
+        {spinning ? "Эргэж байна..." : "🎡 Хүрд эргүүлэх"}
       </motion.button>
 
       {lastWinner && !spinning && (
