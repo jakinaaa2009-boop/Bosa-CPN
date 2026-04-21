@@ -21,7 +21,7 @@ export function isR2Configured() {
 }
 
 function getR2Endpoint() {
-  if (process.env.R2_ENDPOINT) return process.env.R2_ENDPOINT;
+  if (process.env.R2_ENDPOINT) return String(process.env.R2_ENDPOINT).replace(/\/+$/, "");
   const id = process.env.R2_ACCOUNT_ID;
   if (!id) throw new Error("R2_ACCOUNT_ID or R2_ENDPOINT is required for R2");
   return `https://${id}.r2.cloudflarestorage.com`;

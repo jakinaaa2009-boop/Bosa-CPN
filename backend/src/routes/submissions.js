@@ -115,6 +115,16 @@ router.post("/", requireUser, uploadReceipt.single("receipt"), async (req, res) 
     if (e.message === "Only image files are allowed") {
       return res.status(400).json({ error: e.message });
     }
+    if (
+      typeof e?.message === "string" &&
+      (e.message.includes("Receipt storage is configured for Cloudflare R2 only") ||
+        e.message.includes("R2_PUBLIC_BASE_URL is required for R2") ||
+        e.message.includes("R2_BUCKET_NAME") ||
+        e.message.includes("R2_ACCOUNT_ID") ||
+        e.message.includes("R2_ENDPOINT"))
+    ) {
+      return res.status(500).json({ error: e.message });
+    }
     console.error(e);
     res.status(500).json({ error: "Server error" });
   }
