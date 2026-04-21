@@ -62,16 +62,6 @@ function ProductCard({ p, index }: { p: Product; index: number }) {
 
           <div className="relative">
             <div className="flex items-center justify-between gap-3">
-              {showFeatured ? (
-                <div className="inline-flex items-center gap-2 rounded-full bg-white/80 px-3 py-1.5 text-xs font-black text-slate-800 ring-2 ring-amber-200 shadow-[0_12px_34px_rgba(15,23,42,0.10)]">
-                  <span aria-hidden>✨</span> Шилдэг сонголт
-                </div>
-              ) : (
-                <span className="inline-flex items-center rounded-full bg-white/70 px-3 py-1.5 text-xs font-extrabold text-slate-600 ring-1 ring-white/70">
-                  #{String(index + 1).padStart(2, "0")}
-                </span>
-              )}
-
               <span
                 className={[
                   "hidden h-2.5 w-2.5 rounded-full bg-gradient-to-r md:inline-block",

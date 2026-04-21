@@ -299,7 +299,7 @@ export function HowToParticipate() {
                 </span>
               </div>
               <p className="text-sm font-bold leading-relaxed text-slate-800 md:text-base">
-                Оролцох бүртээ аз жаргал, бэлэг дүүрэн боломж таныг хүлээж байна!
+                Бүтээгдэхүүн тус бүрт 1 эрх олгогдоно. Амжилт хүсье!
               </p>
             </div>
           </div>

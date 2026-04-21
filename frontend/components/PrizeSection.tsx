@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { CAMPAIGN_FINE_PRINT } from "@/lib/constants";
 import { staggerContainer, staggerItem, viewportOnce } from "@/lib/motion";
+import { HeroPrizeShowcase } from "./hero/HeroPrizeShowcase";
 
 type Prize = {
   title: string;
@@ -110,15 +111,14 @@ function Sparkle({ className }: { className: string }) {
   );
 }
 
-function PrizeCard({ prize, index }: { prize: Prize; index: number }) {
-  const n = String(index + 1).padStart(2, "0");
+function PrizeCard({ prize }: { prize: Prize }) {
   return (
     <motion.li
       variants={staggerItem}
       whileHover={{ y: -5 }}
       transition={{ type: "spring", stiffness: 260, damping: 22 }}
       className={[
-        "group relative flex flex-col gap-4 rounded-3xl border border-white/70 bg-white/70 p-4 shadow-[0_14px_44px_rgba(15,23,42,0.10)] backdrop-blur",
+        "group relative flex flex-col gap-3 rounded-3xl border border-white/70 bg-white/70 p-3 shadow-[0_12px_34px_rgba(15,23,42,0.10)] backdrop-blur",
         "md:flex-row md:items-center",
         "transition-shadow duration-300",
         prize.accent.glow,
@@ -133,26 +133,23 @@ function PrizeCard({ prize, index }: { prize: Prize; index: number }) {
       />
 
       <div className="flex items-start gap-3 md:items-center">
-        <div className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-slate-900 text-xs font-black text-white shadow-[0_10px_22px_rgba(15,23,42,0.18)] ring-2 ring-white/80">
-          {n}
-        </div>
         <div
           className={[
-            "grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-gradient-to-br ring-1 ring-white/70 shadow-[0_10px_26px_rgba(15,23,42,0.10)]",
+            "grid h-10 w-10 shrink-0 place-items-center rounded-2xl bg-gradient-to-br ring-1 ring-white/70 shadow-[0_8px_22px_rgba(15,23,42,0.10)]",
             prize.accent.iconBg,
           ].join(" ")}
         >
-          <span className="text-2xl" role="img" aria-hidden>
+          <span className="text-xl" role="img" aria-hidden>
             {prize.icon}
           </span>
         </div>
       </div>
 
       <div className="min-w-0 flex-1 md:pl-2">
-        <p className="text-base font-black text-slate-950 md:text-lg">
+        <p className="text-sm font-black text-slate-950 md:text-base">
           {prize.title}
         </p>
-        <p className="mt-1 text-sm font-semibold text-slate-600">
+        <p className="mt-0.5 text-xs font-semibold text-slate-600 md:text-sm">
           {prize.desc}
         </p>
       </div>
@@ -160,7 +157,7 @@ function PrizeCard({ prize, index }: { prize: Prize; index: number }) {
       <div className="flex flex-wrap items-center gap-2 md:flex-nowrap md:justify-end">
         <span
           className={[
-            "inline-flex items-center justify-center rounded-full bg-gradient-to-r px-3.5 py-1.5 text-sm font-black text-white shadow-[0_10px_26px_rgba(15,23,42,0.12)]",
+            "inline-flex items-center justify-center rounded-full bg-gradient-to-r px-3 py-1 text-xs font-black text-white shadow-[0_10px_22px_rgba(15,23,42,0.10)]",
             prize.accent.pricePill,
           ].join(" ")}
         >
@@ -168,7 +165,7 @@ function PrizeCard({ prize, index }: { prize: Prize; index: number }) {
         </span>
         <span
           className={[
-            "inline-flex items-center justify-center gap-1.5 rounded-full bg-gradient-to-r px-3.5 py-1.5 text-sm font-extrabold ring-2",
+            "inline-flex items-center justify-center gap-1.5 rounded-full bg-gradient-to-r px-3 py-1 text-xs font-extrabold ring-2",
             prize.accent.winnersPill,
           ].join(" ")}
         >
@@ -206,44 +203,47 @@ export function PrizeSection() {
       </div>
 
       <div className="relative mx-auto max-w-5xl">
-        <div className="mx-auto max-w-3xl text-center">
+        <div className="grid gap-8 lg:grid-cols-[0.95fr_1.05fr] lg:items-start lg:gap-10">
+          <div className="lg:sticky lg:top-24">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.96 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={viewportOnce}
+              transition={{ type: "spring", stiffness: 200, damping: 22 }}
+              className="mx-auto w-full max-w-[520px]"
+            >
+              <HeroPrizeShowcase />
+            </motion.div>
+
+            <div className="mt-4 text-center lg:mt-6 lg:text-left">
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={viewportOnce}
+                transition={{ duration: 0.4 }}
+                className="inline-flex w-fit items-center gap-2 rounded-full border border-white/70 bg-white/75 px-4 py-1.5 text-xs font-extrabold tracking-wide text-slate-800 shadow-[0_10px_30px_rgba(16,24,40,0.08)] backdrop-blur"
+              >
+                🎁 ШАГНАЛУУД
+              </motion.div>
+
+              <motion.p
+                initial={{ opacity: 0, y: 10 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={viewportOnce}
+                transition={{ delay: 0.08, duration: 0.45 }}
+                className="mx-auto mt-3 max-w-md text-base font-semibold text-slate-600 md:text-lg lg:mx-0"
+              >
+                Өдөр бүрийн баяр хөөр — супер шагнал хүртэл нэг алхам.
+              </motion.p>
+            </div>
+          </div>
+
           <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={viewportOnce}
-            transition={{ duration: 0.4 }}
-            className="inline-flex items-center gap-2 rounded-full border border-white/70 bg-white/75 px-4 py-1.5 text-xs font-extrabold tracking-wide text-slate-800 shadow-[0_10px_30px_rgba(16,24,40,0.08)] backdrop-blur"
-          >
-            🎁 ШАГНАЛЫН САН
-          </motion.div>
-
-          <motion.h2
-            initial={{ opacity: 0, y: 12 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={viewportOnce}
-            transition={{ type: "spring", stiffness: 220, damping: 22 }}
-            className="mt-5 font-display text-4xl font-black tracking-tight text-slate-950 md:text-5xl"
-          >
-            Шагналын сан
-          </motion.h2>
-
-          <motion.p
-            initial={{ opacity: 0, y: 10 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={viewportOnce}
-            transition={{ delay: 0.08, duration: 0.45 }}
-            className="mx-auto mt-3 max-w-2xl text-base font-semibold text-slate-600 md:text-lg"
-          >
-            Өдөр бүрийн баяр хөөр — супер шагнал хүртэл нэг алхам.
-          </motion.p>
-        </div>
-
-        <motion.div
           initial={{ opacity: 0, y: 18 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={viewportOnce}
           transition={{ type: "spring", stiffness: 220, damping: 24 }}
-          className="mt-10 rounded-[2rem] border border-white/70 bg-white/70 p-6 shadow-[0_18px_60px_rgba(15,23,42,0.14)] backdrop-blur md:p-10"
+            className="rounded-[2rem] border border-white/70 bg-white/70 p-5 shadow-[0_16px_46px_rgba(15,23,42,0.14)] backdrop-blur md:p-7 lg:max-h-[720px] lg:overflow-hidden"
         >
           <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             <div className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-fuchsia-500 via-violet-500 to-amber-400 px-4 py-2 text-xs font-black tracking-wide text-white shadow-[0_14px_34px_rgba(168,85,247,0.22)] ring-2 ring-white/80">
@@ -264,56 +264,45 @@ export function PrizeSection() {
             initial="hidden"
             whileInView="show"
             viewport={viewportOnce}
-            className="mt-7 grid gap-4"
+              className="mt-5 grid gap-3 lg:max-h-[430px] lg:overflow-y-auto lg:pr-1"
           >
-            {PRIZES.map((p, i) => (
-              <PrizeCard key={p.title} prize={p} index={i} />
+            {PRIZES.map((p) => (
+              <PrizeCard key={p.title} prize={p} />
             ))}
           </motion.ul>
 
-          <motion.div
-            initial={{ opacity: 0, y: 12 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={viewportOnce}
-            transition={{ delay: 0.08, type: "spring", stiffness: 210, damping: 22 }}
-            className="mt-10 overflow-hidden rounded-[1.75rem] border border-white/70 bg-white/75 shadow-[0_18px_55px_rgba(15,23,42,0.12)] backdrop-blur"
-          >
-            <div className="grid gap-4 p-5 md:grid-cols-[1fr_220px] md:items-center md:gap-6 md:p-6">
-              <div>
-                <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-white/85 px-3 py-1.5 text-xs font-black text-slate-800 ring-2 ring-amber-200">
-                  📝 Санамж
+            <motion.div
+              initial={{ opacity: 0, y: 12 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={viewportOnce}
+              transition={{ delay: 0.08, type: "spring", stiffness: 210, damping: 22 }}
+              className="mt-6 overflow-hidden rounded-[1.75rem] border border-white/70 bg-white/75 shadow-[0_18px_55px_rgba(15,23,42,0.12)] backdrop-blur"
+            >
+              <details className="group">
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-5 py-4">
+                  <span className="inline-flex items-center gap-2 rounded-full bg-white/85 px-3 py-1.5 text-xs font-black text-slate-800 ring-2 ring-amber-200">
+                    📝 Санамж
+                  </span>
+                  <span className="text-xs font-extrabold text-slate-600 group-open:rotate-180 transition">
+                    ▼
+                  </span>
+                </summary>
+                <div className="border-t border-white/70 px-5 pb-5">
+                  <ul className="space-y-2 text-xs font-semibold leading-relaxed text-slate-700 md:text-sm">
+                    {CAMPAIGN_FINE_PRINT.map((t) => (
+                      <li key={t} className="flex gap-2">
+                        <span className="mt-0.5 text-emerald-600" aria-hidden>
+                          ✔
+                        </span>
+                        <span className="min-w-0">{t}</span>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
-                <ul className="space-y-2 text-sm font-semibold leading-relaxed text-slate-700 md:text-base">
-                  {CAMPAIGN_FINE_PRINT.map((t) => (
-                    <li key={t} className="flex gap-2">
-                      <span className="mt-0.5 text-emerald-600" aria-hidden>
-                        ✔
-                      </span>
-                      <span className="min-w-0">{t}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              <div className="relative">
-                <div
-                  aria-hidden
-                  className="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-gradient-to-br from-fuchsia-200/70 to-amber-100/50 blur-2xl"
-                />
-                <div className="relative grid place-items-center rounded-3xl border border-white/70 bg-gradient-to-br from-amber-50 via-white to-fuchsia-50 p-5 shadow-[0_18px_55px_rgba(15,23,42,0.10)]">
-                  <div className="grid h-16 w-16 place-items-center rounded-3xl bg-gradient-to-br from-rose-200 to-amber-100 ring-1 ring-white/70 shadow-[0_14px_40px_rgba(15,23,42,0.10)]">
-                    <span className="text-3xl" role="img" aria-hidden>
-                      🎁
-                    </span>
-                  </div>
-                  <p className="mt-3 text-center text-xs font-extrabold text-slate-700">
-                    Бэлэг дүүрэн супер аз!
-                  </p>
-                </div>
-              </div>
-            </div>
-          </motion.div>
+              </details>
+            </motion.div>
         </motion.div>
+        </div>
       </div>
     </section>
   );

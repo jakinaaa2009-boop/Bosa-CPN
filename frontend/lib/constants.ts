@@ -115,9 +115,9 @@ export const HOW_STEPS = [
     gradient: "from-sky-400 via-cyan-400 to-teal-300",
   },
   {
-    title: "Баталгаат шагнал",
+    title: "Админ шалгаж тохирох эрхийг өгнө",
     emoji: "🎁",
-    description: "Бүртгүүлсэн даруйдаа баталгаат шагналын эзэн болоорой.",
+    description: "Оролцох бүртээ аз жаргал, бэлэг дүүрэн боломж таныг хүлээж байна!",
     gradient: "from-violet-400 via-purple-400 to-fuchsia-400",
   },
   {
