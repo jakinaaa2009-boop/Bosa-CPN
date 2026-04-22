@@ -20,14 +20,14 @@ export function SiteHeader() {
       className="sticky top-0 z-50 px-2 pt-2 md:px-4 md:pt-3"
     >
       <div className="mx-auto max-w-6xl overflow-hidden rounded-[1.75rem] border-4 border-white/90 bg-gradient-to-r from-pink-200/95 via-amber-100/95 to-cyan-200/95 backdrop-blur-md md:rounded-[2rem] [box-shadow:0_12px_40px_rgba(236,72,153,0.2),inset_0_2px_0_rgba(255,255,255,0.9),0_4px_0_rgba(255,255,255,0.5)]">
-        <div className="flex items-center gap-2 px-3 py-2.5 sm:gap-3 sm:px-4 sm:py-3 md:px-5">
+        <div className="flex items-center gap-2 px-2.5 py-2 sm:gap-3 sm:px-4 sm:py-3 md:px-5">
           {/* Logos — shared height, proportional widths */}
           <Link
             href="/"
-            className="group flex shrink-0 items-center gap-1 overflow-visible rounded-2xl bg-white/70 px-2 py-1.5 shadow-md ring-2 ring-white/90 transition hover:bg-white hover:shadow-lg sm:gap-1.5 sm:px-2.5 sm:py-2 md:px-3"
+            className="group flex min-w-0 items-center gap-1 overflow-visible rounded-2xl bg-white/70 px-2 py-1.5 shadow-md ring-2 ring-white/90 transition hover:bg-white hover:shadow-lg sm:gap-1.5 sm:px-2.5 sm:py-2 md:px-3"
           >
             <motion.span
-              className="relative h-9 w-[min(40vw,132px)] shrink-0 sm:h-10 sm:w-[min(34vw,152px)]"
+              className="relative h-8 w-[min(34vw,112px)] shrink-0 sm:h-10 sm:w-[min(34vw,152px)]"
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.98 }}
             >
@@ -45,7 +45,7 @@ export function SiteHeader() {
               aria-hidden
             />
             <motion.span
-              className="relative h-9 w-[min(34vw,118px)] shrink-0 overflow-visible sm:h-10 sm:w-[min(28vw,134px)]"
+              className="relative h-8 w-[min(30vw,104px)] shrink-0 overflow-visible sm:h-10 sm:w-[min(28vw,134px)]"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.98 }}
             >
@@ -106,7 +106,7 @@ export function SiteHeader() {
             aria-label="Цэс нээх"
           >
             <span className="text-lg">☰</span>
-            <span>Цэс</span>
+            <span className="hidden sm:inline">Цэс</span>
           </button>
         </div>
 

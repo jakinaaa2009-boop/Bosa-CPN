@@ -29,10 +29,10 @@ export function HeroNavbar() {
         {/* Logo */}
         <Link
           href="/#home"
-          className="group flex shrink-0 items-center gap-1 overflow-visible rounded-2xl bg-white/75 px-1.5 py-1.5 shadow-sm ring-1 ring-white/90 transition hover:bg-white sm:gap-1.5 sm:px-2.5 md:px-3"
+          className="group flex min-w-0 items-center gap-1 overflow-visible rounded-2xl bg-white/75 px-1.5 py-1.5 shadow-sm ring-1 ring-white/90 transition hover:bg-white sm:gap-1.5 sm:px-2.5 md:px-3"
         >
           {/* Tight gaps + narrow logo2 box — wide empty frame made them look “miles apart” */}
-          <span className="relative h-9 w-[min(40vw,132px)] shrink-0 sm:h-10 sm:w-[min(34vw,152px)]">
+          <span className="relative h-8 w-[min(34vw,112px)] shrink-0 sm:h-10 sm:w-[min(34vw,152px)]">
             <Image
               src="/logo1.png"
               alt="Лого"
@@ -46,7 +46,7 @@ export function HeroNavbar() {
             className="hidden h-7 w-px shrink-0 bg-gradient-to-b from-fuchsia-300/90 to-amber-300/90 sm:block"
             aria-hidden
           />
-          <span className="relative h-9 w-[min(34vw,118px)] shrink-0 overflow-visible sm:h-10 sm:w-[min(28vw,134px)]">
+          <span className="relative h-8 w-[min(30vw,104px)] shrink-0 overflow-visible sm:h-10 sm:w-[min(28vw,134px)]">
             <Image
               src="/logo2.png"
               alt="Кампанийн лого"
