@@ -67,7 +67,7 @@ function floatKeyframes(reduce: boolean, y = 14) {
 }
 
 export function PrizeSection() {
-  const reduce = useReducedMotion();
+  const reduce = useReducedMotion() ?? false;
   const float = floatKeyframes(reduce, 12);
   const snacks = [PROMO_PRODUCTS[0], PROMO_PRODUCTS[4], PROMO_PRODUCTS[8]].filter(
     Boolean
