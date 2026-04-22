@@ -23,11 +23,7 @@ function Sparkle({ className }: { className: string }) {
 }
 
 function ProductCard({ p }: { p: Product }) {
-  const showFeatured = Boolean((p as { featured?: boolean }).featured);
   const name = (p as { name?: string }).name ?? "Бүтээгдэхүүн";
-  const category = (p as { category?: string }).category ?? "";
-  const variants = (p as { variants?: string }).variants ?? "";
-  const desc = (p as { desc?: string }).desc ?? "";
   const border = (p as { border?: string }).border ?? "border-slate-200";
 
   return (
@@ -83,23 +79,6 @@ function ProductCard({ p }: { p: Product }) {
             <p className="font-display text-xl font-black text-slate-950">
               {name}
             </p>
-            {category ? (
-              <p className={`mt-1 text-sm font-extrabold text-slate-700`}>
-                <span className={`bg-gradient-to-r ${p.accent} bg-clip-text text-transparent`}>
-                  {category}
-                </span>
-              </p>
-            ) : null}
-            {variants ? (
-              <p className="mt-1 text-xs font-semibold text-slate-500">
-                Variants: {variants}
-              </p>
-            ) : null}
-            {desc ? (
-              <p className="mt-3 text-sm font-semibold leading-relaxed text-slate-600">
-                {desc}
-              </p>
-            ) : null}
 
             <div className="mt-auto pt-5">
               <div

@@ -10,7 +10,7 @@ export function WinnersSection() {
   const [winners, setWinners] = useState<Winner[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const reduceMotion = useReducedMotion();
+  const reduceMotion = useReducedMotion() ?? false;
 
   useEffect(() => {
     let cancelled = false;
@@ -67,7 +67,7 @@ export function WinnersSection() {
         {loading && (
           <motion.p
             className="mt-10 text-center font-bold text-purple-200"
-            animate={reduceMotion ? undefined : { opacity: [0.45, 1, 0.45] }}
+            animate={reduceMotion ? false : { opacity: [0.45, 1, 0.45] }}
             transition={{ duration: 1.2, repeat: Infinity, ease: "easeInOut" }}
           >
             Ачаалж байна...

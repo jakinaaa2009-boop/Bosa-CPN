@@ -31,7 +31,7 @@ function rotateProps(duration: number, delay: number) {
 }
 
 export function HeroPrizeShowcase() {
-  const reduce = useReducedMotion();
+  const reduce = useReducedMotion() ?? false;
   const orbitProducts = PROMO_PRODUCTS.slice(0, 7);
 
   return (
@@ -58,7 +58,7 @@ export function HeroPrizeShowcase() {
             }}
             animate={
               reduce
-                ? undefined
+                ? false
                 : { opacity: [0.35, 1, 0.35], scale: [0.85, 1.15, 0.85] }
             }
             transition={{

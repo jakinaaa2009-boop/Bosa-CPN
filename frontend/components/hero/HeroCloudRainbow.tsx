@@ -7,7 +7,7 @@ import { motion, useReducedMotion } from "framer-motion";
  * Sits behind content; decorative only.
  */
 export function HeroCloudRainbow() {
-  const reduce = useReducedMotion();
+  const reduce = useReducedMotion() ?? false;
 
   return (
     <div
@@ -61,27 +61,27 @@ export function HeroCloudRainbow() {
       {/* Fluffy clouds — layered puffs */}
       <motion.div
         className="absolute bottom-[2%] left-[-5%] h-28 w-44 rounded-full bg-white/55 blur-2xl md:bottom-[4%] md:h-36 md:w-56"
-        animate={reduce ? undefined : { x: [0, 6, 0], opacity: [0.45, 0.6, 0.45] }}
+        animate={reduce ? false : { x: [0, 6, 0], opacity: [0.45, 0.6, 0.45] }}
         transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
       />
       <motion.div
         className="absolute bottom-[6%] left-[18%] h-20 w-36 rounded-full bg-white/50 blur-xl md:h-24 md:w-44"
-        animate={reduce ? undefined : { x: [0, -5, 0] }}
+        animate={reduce ? false : { x: [0, -5, 0] }}
         transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
       />
       <motion.div
         className="absolute bottom-[0%] left-[38%] h-24 w-40 rounded-full bg-gradient-to-r from-white/60 to-fuchsia-50/40 blur-2xl md:h-32 md:w-52"
-        animate={reduce ? undefined : { y: [0, -4, 0] }}
+        animate={reduce ? false : { y: [0, -4, 0] }}
         transition={{ duration: 9, repeat: Infinity, ease: "easeInOut" }}
       />
       <motion.div
         className="absolute bottom-[4%] right-[12%] h-32 w-48 rounded-full bg-white/55 blur-2xl md:h-40 md:w-64"
-        animate={reduce ? undefined : { x: [0, -8, 0], opacity: [0.5, 0.65, 0.5] }}
+        animate={reduce ? false : { x: [0, -8, 0], opacity: [0.5, 0.65, 0.5] }}
         transition={{ duration: 11, repeat: Infinity, ease: "easeInOut" }}
       />
       <motion.div
         className="absolute bottom-[8%] right-[-4%] h-24 w-40 rounded-full bg-sky-100/50 blur-xl md:h-28 md:w-48"
-        animate={reduce ? undefined : { x: [0, 5, 0] }}
+        animate={reduce ? false : { x: [0, 5, 0] }}
         transition={{ duration: 13, repeat: Infinity, ease: "easeInOut" }}
       />
 

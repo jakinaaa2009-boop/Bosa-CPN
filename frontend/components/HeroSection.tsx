@@ -8,7 +8,7 @@ import { HeroCloudRainbow } from "./hero/HeroCloudRainbow";
 import { HeroNavbar } from "./hero/HeroNavbar";
 
 export function HeroSection() {
-  const reduce = useReducedMotion();
+  const reduce = useReducedMotion() ?? false;
 
   return (
     <section

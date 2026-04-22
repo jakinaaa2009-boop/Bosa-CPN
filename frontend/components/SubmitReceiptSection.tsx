@@ -15,7 +15,7 @@ import { viewportOnce } from "@/lib/motion";
 export function SubmitReceiptSection() {
   const [user, setUser] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
-  const reduceMotion = useReducedMotion();
+  const reduceMotion = useReducedMotion() ?? false;
 
   useEffect(() => {
     const t = getUserToken();
@@ -59,7 +59,7 @@ export function SubmitReceiptSection() {
         {loading ? (
           <motion.p
             className="mt-12 text-center font-display text-lg font-bold text-fuchsia-600"
-            animate={reduceMotion ? undefined : { opacity: [0.4, 1, 0.4] }}
+            animate={reduceMotion ? false : { opacity: [0.4, 1, 0.4] }}
             transition={{ duration: 1.1, repeat: Infinity, ease: "easeInOut" }}
           >
             Ачаалж байна...

@@ -15,7 +15,7 @@ const CENTER_LINKS = [
 
 export function HeroNavbar() {
   const [open, setOpen] = useState(false);
-  const reduceMotion = useReducedMotion();
+  const reduceMotion = useReducedMotion() ?? false;
 
   return (
     <motion.nav

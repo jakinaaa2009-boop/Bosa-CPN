@@ -8,7 +8,7 @@ import { NAV_LINKS, SUBMIT_PAGE_HREF } from "@/lib/constants";
 
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
-  const reduceMotion = useReducedMotion();
+  const reduceMotion = useReducedMotion() ?? false;
   const mainLinks = NAV_LINKS.filter((l) => l.href !== SUBMIT_PAGE_HREF);
   const cta = NAV_LINKS.find((l) => l.href === SUBMIT_PAGE_HREF);
 

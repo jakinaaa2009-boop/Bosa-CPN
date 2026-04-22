@@ -58,17 +58,8 @@ const PRIZES: Prize[] = [
   },
 ] as const;
 
-function floatKeyframes(reduce: boolean, y = 14) {
-  if (reduce) return {};
-  return {
-    animate: { y: [0, -y, 0] },
-    transition: { duration: 5.2, repeat: Infinity, ease: "easeInOut" as const },
-  };
-}
-
 export function PrizeSection() {
   const reduce = useReducedMotion() ?? false;
-  const float = floatKeyframes(reduce, 12);
   const snacks = [PROMO_PRODUCTS[0], PROMO_PRODUCTS[4], PROMO_PRODUCTS[8]].filter(
     Boolean
   );

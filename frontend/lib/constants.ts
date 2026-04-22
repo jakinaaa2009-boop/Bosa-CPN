@@ -2,7 +2,7 @@
 export const PROMO_PRODUCTS = [
   {
     id: "1",
-    image: "/candy-placeholder.svg",
+    image: "/candy1.png",
     accent: "from-pink-400 to-rose-400",
     border: "border-rose-300",
     name: "Cream-O",
@@ -13,7 +13,7 @@ export const PROMO_PRODUCTS = [
   },
   {
     id: "2",
-    image: "/candy-placeholder.svg",
+    image: "/candy2.png",
     accent: "from-amber-400 to-orange-400",
     border: "border-orange-300",
     name: "Cream-O",
@@ -24,7 +24,7 @@ export const PROMO_PRODUCTS = [
   },
   {
     id: "3",
-    image: "/candy-placeholder.svg",
+    image: "/candy3.png",
     accent: "from-cyan-400 to-sky-500",
     border: "border-sky-300",
     name: "Potato Chips",
@@ -35,7 +35,7 @@ export const PROMO_PRODUCTS = [
   },
   {
     id: "4",
-    image: "/candy-placeholder.svg",
+    image: "/candy4.png",
     accent: "from-violet-400 to-purple-500",
     border: "border-violet-300",
     name: "Nips",
@@ -46,7 +46,7 @@ export const PROMO_PRODUCTS = [
   },
   {
     id: "5",
-    image: "/candy-placeholder.svg",
+    image: "/candy5.png",
     accent: "from-emerald-400 to-teal-400",
     border: "border-emerald-300",
     name: "Nips",
@@ -57,7 +57,7 @@ export const PROMO_PRODUCTS = [
   },
   {
     id: "6",
-    image: "/candy-placeholder.svg",
+    image: "/candy6.png",
     accent: "from-fuchsia-400 to-pink-500",
     border: "border-fuchsia-300",
     name: "Nips",
@@ -68,7 +68,7 @@ export const PROMO_PRODUCTS = [
   },
   {
     id: "7",
-    image: "/candy-placeholder.svg",
+    image: "/candy7.png",
     accent: "from-lime-400 to-green-400",
     border: "border-lime-300",
     name: "Nips",
@@ -79,7 +79,7 @@ export const PROMO_PRODUCTS = [
   },
   {
     id: "8",
-    image: "/candy-placeholder.svg",
+    image: "/candy8.png",
     accent: "from-red-400 to-orange-400",
     border: "border-red-300",
     name: "Potato Chips",
@@ -90,7 +90,7 @@ export const PROMO_PRODUCTS = [
   },
   {
     id: "9",
-    image: "/candy-placeholder.svg",
+    image: "/candy9.png",
     accent: "from-indigo-400 to-blue-500",
     border: "border-indigo-300",
     name: "Potato Chips",
