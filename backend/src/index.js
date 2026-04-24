@@ -9,6 +9,7 @@ import adminRouter from "./routes/admin.js";
 import winnersRouter from "./routes/winners.js";
 import drawRouter from "./routes/draw.js";
 import userRouter from "./routes/user.js";
+import debugDbRouter from "./routes/debugDb.js";
 import { Admin } from "./models/Admin.js";
 import bcrypt from "bcryptjs";
 
@@ -88,6 +89,7 @@ app.use("/api/submissions", submissionsRouter);
 app.use("/api/admin", adminRouter);
 app.use("/api/winners", winnersRouter);
 app.use("/api/draw", drawRouter);
+app.use("/api/debug-db", debugDbRouter);
 
 app.get("/api/health", (_req, res) => res.json({ ok: true }));
 
