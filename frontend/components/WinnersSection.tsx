@@ -84,7 +84,7 @@ export function WinnersSection() {
             className="mx-auto mt-12 max-w-md rounded-3xl border-2 border-amber-400/50 bg-white/10 p-8 text-center backdrop-blur-md"
           >
             <p className="text-4xl">🎰</p>
-            <p className="mt-4 font-display text-xl font-bold">6/20-нд ялагч тодорно.</p>
+            <p className="mt-4 font-display text-xl font-bold">2026.08.20-нд ялагч тодорно.</p>
           </motion.div>
         )}
 

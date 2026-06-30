@@ -128,7 +128,7 @@ export function HeroSection() {
             >
               <div className="relative aspect-[16/10] w-full">
                 <Image
-                  src="/banner.jpg"
+                  src="/poster1.png"
                   alt=""
                   fill
                   priority
@@ -145,7 +145,7 @@ export function HeroSection() {
             aria-hidden
           >
             <Image
-              src="/banner.jpg"
+              src="/poster1.png"
               alt=""
               fill
               priority
